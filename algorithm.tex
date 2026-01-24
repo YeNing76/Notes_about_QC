@@ -1,0 +1,358 @@
+\section{Study of the Common Quantum Computing Algorithms}
+\subsection{Grover's algorithm}
+Grover's algorthim~\cite{Abhijith2018QuantumBeginner,NielsenChuang2010,Hidary2019QCBook} enables one to find a specific item within a randomly ordered database of $N$ using $O(\sqrt{N})$ operations. This approach can be used to accelerate the search by constructing an ``oracle'' which is in essence a quantum circuit that can flip the state of an ancillary qubit if the searching criterion is fullfilled. To this end, we need to set up a function $f(\boldsymbol{x})$ will output 1 if the input $\boldsymbol{x}$ equals the target value $\boldsymbol{x^*}$. Therefore, the functio is defined as
+\begin{equation}
+     f(\boldsymbol{x})=\begin{cases}
+        1, & \qquad \text{if} \; \boldsymbol{x}=\boldsymbol{x^*} \\
+        0, & \qquad \text{otherwise}
+    \end{cases}.   
+\end{equation}
+With this function, we can turn any input into a binary output. For now, the function $f(\boldsymbol{x})$ is only an abstract symbole. Its specific form is decided by the problem we are solving. For example, if we want to find a naive result of $\boldsymbol{x^*}$ such that $x_1^*=1$ and $x_2^*=1$ for $\boldsymbol{x}=x_1x_2$. This essentially means $f(\boldsymbol{x})$ here is an AND gate. But AND is \textcolor{red}{not} reversible so that it cannot be a quantum gate. Fortunately, we have Toffoli gate which can take three bits as input and output three bits. The first two bits are used as the control bits so that the third bit flips if the control bits are all 1s. The details of the Toffoli can be found in section~\ref{sec:QuantumCircuit}. In other word, for this problem, the orcal quantum circuit can be realized by a Toffoli gate. In general, the functionality of the oracle is 
+\begin{equation}
+    \ket{\boldsymbol{x}}\ket{q}\overset{O} {\longrightarrow} \ket{\boldsymbol{x}}\ket{f(\boldsymbol{x})\oplus q}, 
+\end{equation}
+where $O$ is the oracle operator and $\oplus$ denots XOR operation. Based on the oracle opertor $O$, Grover operator is defined
+\begin{equation}
+    G=(2\ket{\psi}\bra{\psi}-I)O,
+\end{equation}
+where $\ket{\psi}=\frac{1}{\sqrt{N}}\sum_i\ket{i}$ is the uniform superpostion over all the basis states and $I$ is the identity operator. Since by now, we have already known the behavior of oracle opertor $O$, then we need to analyze the purpose of $(2\ket{\psi}\bra{\psi}-I)$. Let use this part of operator onto an arbitary state, given by $\sum_i a_i\ket{i}$. Please note the arbitary state is different from the $\ket{\psi}$ for the previous one does not have equal amplitude for each component. This is important, since the change of the amplitudes will become one of main concerns of this algorithm. Therefore,
+\begin{equation}
+    (2\ket{\psi}\bra{\psi}-I)\sum_i a_i\ket{i}=\sum_i(2\langle a\rangle-a_i)\ket{i}.
+    \label{eqn:FlipMeanAmplitude}
+\end{equation}
+From the Eq.~\ref{eqn:FlipMeanAmplitude}, the effect of the operator on the arbitary state is to flip the amplitude of each component $\ket{i}$ (with the amplitude of $a_i$) about the mean amplitude $\langle a\rangle$. This property plays a very important role in this scheme. For this reason, a brief explanation over the expression $2\langle a\rangle-a_i$ is necessary. Suppose, without losing generality, $a_i>\langle a\rangle$, then the distance between the two value is $a_i-\langle a\rangle$. After flipping, the new value is $\langle a\rangle -(a_i-\langle a\rangle)$, hence the result $2\langle a\rangle-a_i$. 
+
+Now, it is time to get the initial state ready as shown in the following figure (the first two are the input qubits and the third is the ancillary qubit):
+\begin{figure}[ht]
+\centering
+    \begin{quantikz}
+    \lstick{$\ket{0}$} & \gate{H} & \qw &\rstick[2]{\ket{\psi}} \\
+    \lstick{$\ket{0}$} & \gate{H} & \qw &\\
+    \lstick{$\ket{0}$} & \gate{X} & \gate{H} & \qw \rstick{\ket{-}}
+    \end{quantikz}
+\caption{State Preparation}
+\label{fig:StatePreparation}
+\end{figure}
+After the Hadamard transformation, the two $\ket{0}$s are turned into $\ket{\psi}$ and the ancillary qubit is turned into $\frac{\ket{0}-\ket{1}}{\sqrt{2}}$. So, the prepared state is $\ket{\psi}\frac{\ket{0}-\ket{1}}{\sqrt{2}}$. If the input value is exactly what we are looking for, then the oracle operator will disclose
+\begin{equation}
+    O\ket{\boldsymbol{x^*}}\frac{\ket{0}-\ket{1}}{\sqrt{2}}\rightarrow\ket{\boldsymbol{x^*}}\frac{\ket{f(\boldsymbol{x^*})\oplus0}-\ket{f(\boldsymbol{x^*})\oplus1}}{\sqrt{2}}=\ket{\boldsymbol{x^*}}\frac{\ket{1}-\ket{0}}{\sqrt{2}}=-\ket{\boldsymbol{x^*}}\frac{\ket{0}-\ket{1}}{\sqrt{2}}.
+    \label{eqn:FlipAmp}
+\end{equation} 
+From this equation we can see, if oracle operator is exerted on the target value $\ket{\boldsymbol{x^*}}$, its amplitude will be changed into its oppsite number, while other state will be the same. This will make a big difference between the targeted state and the other states, since the "flipped about the mean amplitude" will be followed. Then we can repeat this procedure many times and the difference will be accumulated until the target state is well-marked.  In the worst case, this procedure will be repeated for $\frac{\pi\sqrt{N}}{4}$ times.
+\subsection{Bernstein-Vazirani Algorithm}
+BV algorithm~\cite{Abhijith2018QuantumBeginner,NielsenChuang2010,Hidary2019QCBook} is used to solve this type of problems: suppose we have a classical Boolean function $f:\{0,1\}^n\mapsto\{0,1\}$. If there is a \textit{hidden string} $\textbf{s}$ which is unknow, this Boolean function can always be expressed as $f_\textbf{s}(\textbf{x})=\oplus_is_i x_i\equiv\langle\textbf{s},\textbf{x}\rangle$ which can be evaluated by an oracle like we saw in Grover's algorithm, then the question is can we find out the hidden string with just a single application of the oracle?
+
+More note on $f:\{0,1\}^n\mapsto\{0,1\}$ and $f_\textbf{s}(\textbf{x})=\oplus_is_i x_i\equiv\langle\textbf{s},\textbf{x}\rangle$. Here $\{0,1\}^n$ means a set of binary string, and $n$ is the length of the string. For example, when $n=2$, this set contains elements like {(00), (01), (10), (11)}. As to the definition of $\langle\textbf{s},\textbf{x}\rangle$, we can understand it via a specific example. If we have $\textbf{s}=(1, 0, 1)$ and $\textbf{x}=(1, 1, 1)$, then the expansion of $\oplus_is_i x_i$ is $(1\times1+0\times1+1\times1) \; \text{mod}\; 2$. Two details need to be emphasized here: first, the \textcolor{red}{mod 2} is mandatory; second, the digit in the binary string is the \textbf{index} of qubit, not the component of the vector on that qubit. For example, our convention is like $\ket{0}=\begin{bmatrix}
+    1\\0
+\end{bmatrix}$. If you have a digital 0 at hand, then this 0 is the 0 on the left side of the equation, not the second component on the right side of the equation. 
+
+Similar to Grover's algorithm, we need an oracle $U_s$ to evaluate the function $f_\textbf{s}(\textbf{x})$. Due to requirement of unitarity and reversiblity, the oracle operator also needs to work on an ancilla qubit $\ket{q}$~\cite{RobertLoredo2020}. Therefore, we have 
+\begin{equation}
+    U_s\ket{\textbf{x}}\ket{q}=\ket{\textbf{x}}\ket{q\oplus\langle\textbf{s},\textbf{x}\rangle}.
+\end{equation}
+Denoting $\ket{-}=(|0\rangle-|1\rangle)/\sqrt{2}$, we can verify from Eq.~\ref{eqn:FlipAmp} that,
+\begin{equation}
+    U_s|\textbf{x}\rangle|-\rangle=(-1)^{\langle\textbf{s},\textbf{x}\rangle}|\textbf{x}\rangle|-\rangle.
+\end{equation}
+Meanwhile, the \textit{n}-qubit Hadamard operator can be expanded in the outer-product form:
+\begin{equation}
+    H^{\otimes n}=\frac{1}{\sqrt{2^n}}\sum_{\textbf{x, y}\in\{0,1\}^n}(-1)^{\langle\textbf{x},\textbf{y}\rangle}\ket{\textbf{y}}\bra{\textbf{x}}
+    \label{eqn:NqubitHadamard}
+\end{equation}
+$U_s$ and $H^{\oplus n}$ are the only two operators used in the BV algorithm, and the process is presented by
+\begin{equation}
+    \begin{split}
+    \ket{0}^n\ket{n}\xrightarrow{H^{\otimes (n)}\otimes H} \frac{1}{\sqrt{2^n}}\sum_{\textbf{x}=0}^{2^n-1}\ket{\textbf{x}}\otimes\ket{-}\overset{U_s}{\rightarrow}\frac{1}{\sqrt{2^n}}\sum_{\textbf{x}=0}^{2^n-1}(-1)^{\langle\textbf{s},\textbf{x}\rangle}\ket{\textbf{x}}\otimes\ket{-}\\ 
+    \overset{H^{\otimes n}}{\longrightarrow}\frac{1}{\sqrt{2^n}}\sum_{\textbf{x, y}=0}^{2^n-1}(-1)^{\langle\textbf{s},\textbf{x}\rangle\oplus\langle\textbf{x},\textbf{y}\rangle}\ket{y}\otimes\ket{-}\equiv\ket{\textbf{s}}\otimes\ket{-}.
+    \end{split}
+\end{equation}
+\subsection{The Quantum Fourier Transform (QFT)}
+QFT is a core quantum computing algorithm plays an important role in a couple of other algorithms~\cite{NielsenChuang2010}. QFT is based on the classical \textit{discrete Fourier Transform} (DFT), which takes as input a vector of complex numbers, $x_0,...,x_{N-1}$ where the length $N$ is a fixed parameter. The output of the DFT is another set of complex numbers $y_0,...,y_{N-1}$ which is related to the input $x$s by
+\begin{equation}
+    y_k\equiv\frac{1}{\sqrt{N}}\sum_{j=0}^{N-1}x_je^{2\pi ijk}/N.
+\end{equation}
+Its inverse is given by
+\begin{equation}
+    x_j\equiv\frac{1}{\sqrt{N}}\sum_{j=0}^{N-1}y_ke^{-2\pi ijk}/N.
+\end{equation}
+In QFT, DFT is done on the \textit{amplitude} of a quantum state
+\begin{equation}
+    \sum_{j=0}^{N-1}x_j\ket{j}\longrightarrow\sum_{k=0}^{N-1}y_k\ket{k},
+\end{equation}
+where, as we can see, the  $y_k$ are now the DFT of the amplitude of $x_j$. Such a transform is possible as long as we can find a unitary operator $\hat{F}$ such that
+\begin{equation}
+    \ket{\tilde{\psi}}=\hat{F}\ket{\psi}, \quad \text{with}\quad\hat{F}^\dagger\hat{F}=\hat{I}.
+\end{equation}
+Similar to Eqn.~\ref{eqn:NqubitHadamard}, both $\hat{F}^{\dagger}$ and $\hat{F}$ can be written into the outer product form:
+\begin{equation}
+    \hat{F}^\dagger=\left(\sum_{j,k}\frac{e^{-2xijk/N}}{\sqrt{N}}\ket{j}\bra{k}\right), \quad \text{and}\quad \hat{F}=\left(\sum_{j^{\prime},k^{\prime}}\frac{e^{2xij^{\prime} k^{\prime}/N}}{\sqrt{N}}\ket{k^{\prime}}\bra{j^{\prime}}\right).
+\end{equation}
+With this, it is easy to confirm that $\hat{F}^\dagger\hat{F}=\hat{I}$. 
+
+Let $N=2^n$, where $n$ is the number of qubit. The basis $\ket{0}, ...,\ket{2^n-1}$ is the computational basis for those qubits. In other words, we have $\ket{j}$ with $0 \le j\le n-1$. Now, there comes the tricky part, in the upcoming discussion, instead of using decimal number $j$, we use its corresponding binary form $j_1j_2...j_n$ fulfills $j=j_12^{n-1}+j_22^{n-2}+\cdots+j_n2^0$. As for the \textit{binary fraction}, we have $j_l/2+j_{l+1}/4+\cdots+j_m/2^{m-l+1}$, we use the notation $0.j_lj_{l+1}\cdots j_m$. With these notations, the transformation
+\begin{equation}
+    \ket{j}\longrightarrow\frac{1}{\sqrt{N}}\sum_{k=0}^{N-1}e^{2\pi ijk/N}\ket{k}.
+    \label{eqn:basisTransfrom}
+\end{equation}
+\begin{example}
+    For $\ket{0}$, we have
+    \begin{equation}
+        \ket{0}\rightarrow\frac{1}{\sqrt{N}}\sum_{k=0}^{N-1}e^{2\pi i 0 k/N}\ket{k}.
+        \label{eqn:QFTof0}
+    \end{equation}
+    Since $k$ is a binary number, which means $k\in \{0,1\}$, then $N=2$. Eqn. (\ref{eqn:QFTof0}) can be further expanded into $\frac{1}{\sqrt{2}}(\ket{0}+\ket{1})$. Based on that, it is easy to see
+    \begin{equation}
+        \begin{split}
+            \ket{00}=\ket{0}\ket{0}&\rightarrow\frac{1}{2}(\ket{0}+\ket{1})\otimes(\ket{0}+\ket{1}) \\
+            &=\frac{1}{2}(\ket{00}+\ket{10}+\ket{01}+\ket{11}).
+        \end{split}
+    \end{equation}
+    So, the Fourier transform of the $n$ qubit state $\ket{00...0}$ is $\frac{1}{2^{n/2}}\left(\ket{00...0}+\ket{10...0}+\cdots+\ket{11...1}\right)$
+    \label{exp:QFT1}
+\end{example}
+Follow the idea of Example \ref{exp:QFT1}, Eqn. \ref{eqn:basisTransfrom} can be written into the useful \textit{product representation}:
+\begin{equation}
+    \begin{split}
+        &\ket{j_1,\cdots,j_n}\rightarrow\\
+        &\frac{1}{2^{n/2}}\left(\ket{0}+e^{2\pi i0.j_n}\ket{1}\right)\otimes\left(\ket{0}+e^{2\pi i0.j_{n-1}j_n}\ket{1}\right)\otimes\cdots\otimes\left(\ket{0}+e^{2\pi i0.j_1j_2\cdots j_n}\ket{1}\right).
+    \end{split}   
+   \label{eqn:ProductRepre}
+\end{equation}
+The equivalence between Eqn.~\ref{eqn:basisTransfrom} and Eqn.~\ref{eqn:ProductRepre} can be mathematically proved by
+\begin{equation}
+    \begin{split}
+        \ket{j}&\rightarrow\frac{1}{2^{n/2}}\sum_{k=0}^{2^n-1}e^{2\pi ijk/2^{n}}\ket{k}\\
+        &=\frac{1}{2^{n/2}}\sum_{k_1=0}^1\cdots\sum_{k_n=0}^1e^{2\pi ij(\sum_{l=1}^nk_l2^{-l})}\ket{k}\\
+        &=\frac{1}{2^{n/2}}\sum_{k_1=0}^1\cdots\sum_{k_n=0}^1\bigotimes_{l=1}^ne^{2\pi ijk_l2^{-l}}\ket{k_l}\\
+        &=\frac{1}{2^{n/2}}\bigotimes_{l=1}^n\left[\sum_{k_l=0}^1e^{2\pi ijk_l2^{-l}}\ket{k_l}\right]\\
+        &=\frac{1}{2^{n/2}}\bigotimes_{l=1}^n\left[\ket{0}+e^{2\pi ij2^{-l}}\ket{1}\right].
+    \end{split} 
+    \label{eqn:ProveEquivalence}
+\end{equation}
+It is easy to see, the last line of Eqn.~\ref{eqn:ProveEquivalence} is equivalent to the right side of Eqn.~\ref{eqn:ProductRepre}. Now, we can see the significance of Eqn.~\ref{eqn:ProductRepre} lies in the fact that the unitary 
+\begin{equation}
+    \ket{0,1}\longrightarrow\frac{1}{\sqrt{2}}(\ket{0}\pm e^{i\theta}\ket{1})
+\end{equation}
+is a Hadamard gate followed by a $Z$-rotation by $\theta$ defined by
+\begin{equation}
+    Z(\theta)=\begin{bmatrix}
+        1&0\\
+        0&e^{i\theta}
+    \end{bmatrix}
+\end{equation}
+In Eqn.~\ref{eqn:ProductRepre}, the rotation depends on the values of the other bits. So we should expect to be able to build the QFT out of \textit{Hadamards} and \textit{controlled-phase rotation gates}. Define the rotation
+\begin{equation}
+    \hat{R}_k=\begin{bmatrix}
+        1&0\\
+        0&e^{2\pi i/2^k}
+    \end{bmatrix}.
+\end{equation}
+The controlled-$\hat{R}_k$ gate performs if and only if a control bit is $\ket{1}$ rather than $\ket{0}$. Putting those together, we can get figure~\ref{fig:QFT}. In the first line of this figure, after applying the Hadamard gate to the first bit produces the state
+\begin{equation}
+    \frac{1}{\sqrt{2}}\left(\ket{0}+e^{2\pi i0.j_1}\right)\ket{j_2,\cdots,j_n}.
+\end{equation}
+This process continues for the rest of the qubit, giving the final state
+\begin{equation}
+    \frac{1}{2^{n/2}}\left(\ket{0}+e^{2\pi i0.j_1j_2\cdots j_n}\ket{1}\right)\otimes\left(\ket{0}+e^{i\pi i0.j_2\cdots j_n}\ket{1}\right)\otimes\cdots\otimes\left(\ket{0}+e^{2\pi i0.j_n}\right).
+    \label{Eqn:AfterQTFFigure}
+\end{equation}
+Compare Eqn.~\ref{Eqn:AfterQTFFigure} and Eqn.~\ref{eqn:ProductRepre}, we can see swap operations are needed to reach the desired result. Therefore, it is time for us to count the total number of the gates needed in this circuit. For the first qubit, there are one Hadamard gate and $n-1$ conditional rotation -- a total of $n$ gates. Then, for the second qubit, one Hadmard gate plus $n-2$ conditional rotations leads to $n-1$ gates. So we need $n+(n-1)$ gates for the first two qubits. This counting proceeds for the rest ends up with $n(n+1)/2$ total number of gates. Don't forget we also need to take into account $n/2$ swaps, each of which need three controlled-NOT gates. Therefore, this circuit provides a $\Theta(n^2)$ algorithm for pefroming the quantum Fourier Transform. Compared to the best classical algorithm for \textit{Fast Fourier Transform} (FFT) requirement of $\Theta(n2^n)$, the quantum computing is terrific. However, it is still unknown for now whether the QFT can be used to real problem directly to speed up the computation as commemnted in~\cite{NielsenChuang2010}.
+\begin{quote}
+    \ttfamily
+    \raggedright
+    \enquote{The problem is that the amplitude in a quantum computer cannot be directly accessed by measurement. Thus, there is no way of determining the Fourier transfomed amplitudes of the original state. Worse still, there is in general no way to efficiently prepare the original state to be Fourier transfomed. Thus, finding uses for the QFT is more subtle than we might have hoped.}
+\end{quote}
+
+\begin{figure}
+    \centering
+    \resizebox{\textwidth}{!}{
+        \begin{quantikz}
+            \lstick{$\ket{j_1}$} & \gate{H} & \gate{R_2} & \cdots & \gate{R_{n-1}} & \gate{R_n} &&&&&& \qw & \rstick{$\ket{0} + e^{2\pi i0.j_1\ldots j_n} \ket{1}$}\\
+            \lstick{$\ket{j_2}$}&&\ctrl{-1}&\cdots&&&\gate{H}&\cdots&\gate{R_{n-2}}&\gate{R_{n-1}}& \cdots&\qw&\rstick{$\ket{0} + e^{2\pi i0.j_2\ldots j_n} \ket{1}$}\\
+            \quad\vdots\qquad\qquad\vdots\\
+            \lstick{\ket{j_{n-1}}}&&&&\ctrl{-3}&&&&\ctrl{-2}&\cdots&\gate{H}&\gate{R_2}&\rstick{$\ket{0} + e^{2\pi i0.j_{n-1}\ldots j_n} \ket{1}$}\\
+            \lstick{\ket{j_n}}&&&&&\ctrl{-4}&&&&\ctrl{-3}&\cdots&\ctrl{-1}&\rstick{$\ket{0} + e^{2\pi i0.j_n} \ket{1}$}
+        \end{quantikz}
+    }
+    \caption{Circuit of Quantum Fourier Transform}
+    \label{fig:QFT}
+\end{figure}
+
+\subsection{Phase Estimation}
+Phase Estimation (PE)~\cite{Abhijith2018QuantumBeginner,NielsenChuang2010} is one of the scenarios that the QFT can be used, and PE itself, as a quantum algorithm, can serve as a subroutine of other quantum computing application. PE is designed for solving a certain type of eigenvalue problem where a unitary operator $U$ has an eigenvector $\ket{u}$ with eigenvalue $e^{2\pi i\varphi}$, with unknown value of the $\varphi$.
+
+To establish a complete PE, we first need an oracle (black box) to help us to prepare the state $\ket{u}$ and performing the controlled $U^{2^j}$ operation, where $j$ is a non-negative integer. After that, PE needs two type of register. One contains $t$ qubits initially in the state $\ket{0}$, the other is used to store $\ket{u}$. Based on the established hardware, PE can perform the following three steps:
+\begin{enumerate}
+    \item Circuit shown in Fig~\ref{fig:FirstStagePE} will be applied;
+    \item \textit{Inverse} QFT will be performed on the first register;
+    \item Read out the state of the first register by doing a measurement in the computational basis.
+\end{enumerate}
+% First stage of the PE
+\begin{figure}
+    \centering
+    \resizebox{\textwidth}{!}{
+        \begin{quantikz}
+            \ \ \\
+            \lstick[7]{First register \\ $t$ qubits} \ \ \\ \\  \\  \\  \\ \\[1.5cm]
+            \ \ \\
+            \ \ \\
+            \lstick[2]{Second register}  \\ \\ \\
+        \end{quantikz}
+        \begin{quantikz}
+            \lstick{$\ket{0}$} & \gate{H} &&&&\ \ldots\ & \ctrl{5} &  \qw &\ \ \rstick{$\ket{0} \quad e^{2\pi i(2^{t-1}\varphi)\ket{1}}$}\\
+            \ \vdots \ \\
+            \lstick{$\ket{0}$} & \gate{H} & & & \ctrl{3} &\ \ldots\ & \qw & \qw &\ \ \rstick{$\ket{0} \quad e^{2\pi i(2^{2}\varphi)\ket{1}}$} \\
+            \lstick{$\ket{0}$} & \gate{H} & & \ctrl{2} & &\ \ldots\ & \qw & &\ \ \rstick{$\ket{0} \quad e^{2\pi i(2^{1}\varphi)\ket{1}}$} \\
+            \lstick{$\ket{0}$} & \gate{H} &\ctrl{1} & \qw &\qw &\ \ldots\ &   & \qw &\ \ \rstick{$\ket{0} \quad e^{2\pi i(2^{0}\varphi)\ket{1}}$}\\
+            \lstick[3, brackets=none]{$\ket{u}$}&  & \gate{U^{2^0}} & \gate{U^{2^1}} & \gate{U^{2^2}} &\ \ldots\ &\gate{U^{2^{t-1}}}&\qw& \rstick[3, brackets=none]{$\ket{u}$}
+        \end{quantikz}
+    }
+    \caption{The First Stage of PE}
+    \label{fig:FirstStagePE}
+\end{figure}
+As we can see in Fig.~\ref{fig:FirstStagePE}, this circuit starts by applying the Hadamard on the first register and then followed by application of controlled-$U$ operators on the second register. The result of this circuit is
+\begin{equation}
+    \frac{1}{2^{t/2}}\left(\ket{0}+e^{2\pi i2^{t-1}\varphi}\ket{1}\right)\otimes\left(\ket{0}+e^{2\pi i2^{t-2}\varphi}\ket{1}\right)\cdots\left(\ket{0}+e^{2\pi i2^0\varphi}\right)=\frac{1}{2^{t/2}}\sum_{k=0}^{2^t-1}e^{2\pi i\varphi k}\ket{k}.
+    \label{eqn:AfterFirstRegister}
+\end{equation}
+If we expand $\varphi$ into its $t$ binary bit form and use the notation $\varphi=0.\varphi_1\cdots\varphi_t$, the left side of Eqn.~\ref{eqn:AfterFirstRegister} can be rewritten into
+\begin{equation}
+    \frac{1}{2^{t/2}}\left(\ket{0}+e^{2\pi i0.\varphi_1}\ket{1}\right)\otimes\left(\ket{0}+e^{2\pi i0.\varphi_{t-1}\varphi_t}\ket{1}\right)\cdots\left(\ket{0}+e^{2\pi i0.\varphi_1\varphi_2\cdots\varphi_t}\ket{1}\right),
+\end{equation}
+which is exactly the same as Eqn.~(\ref{eqn:ProductRepre}). Therefore, the second step of PE is to apply the inverse QFT, which gives rise to the product state $\ket{\varphi_1\cdots\varphi_t}$. The measurement will tell us the exact value of $\varphi$. This is an ideal scenario when $\varphi$ can be expressed as a $t$ bit binary expansion. However, even if this condition is not fully fullfilled, it turns out that the procedure will produce a pretty good approximation with high probability.
+
+\subsection{HHL Algorithm for Linear Systems Problem}
+Linear system problem can be met everywhere. To solve it on a quantum computer, we need to make use of the QFT and PE analyzed above. This problem is defined as
+\begin{equation}
+    A\ket{x}=\ket{b},
+\end{equation}
+where $A$ is a Hermitian matrix and both solution to be found $\ket{x}$ and the constant vector $\ket{b}$ have already been normalized, which means $\left\|\vec{x}\right\|=\left\|\vec{b}\right\| =1$. The solution can be expressed as $\ket{x}=\frac{A^{-1}\ket{b}}{\left\| A^{-1}\ket{b}\right\| }$. When $\left\| A^{-1}\ket{b}\right\|=1$, this expression can be further simplified as
+\begin{equation}
+    \ket{x}=A^{-1}\ket{b}
+    \label{eqn:solutionofA}
+\end{equation}
+
+The quantum algorithm  for the linear system was first proposeb by Harrow, Hassidim, and Lloyd, and hence the short name HHL. Mathematical formulation can be summarized briefly below.
+Using spectral decompostion theorem, operator $A$ can be expressed as 
+\begin{equation}
+    A=\sum_{j=0}^{N-1}\lambda_j\ket{u_j}\bra{u_j},
+    \label{eqn:SpectralDecomposition}
+\end{equation}
+where $\lambda_j$ is the $j^{\text{th}}$ eigenvalue of matrix $A$. Since $A$ is Hermitian, its eigenvectors can form orthonormal basis, and its inverse can be expressed as
+\begin{equation}
+    A^{-1}=\sum_{j=0}^{N-1}\lambda_j^{-1}\ket{u_j}\bra{u_j}.
+    \label{eqn:inverseofA}
+\end{equation} 
+Now, let's express the constant vector $\ket{b}$ in terms of eigenbasis of $A$:
+\begin{equation}
+    \ket{b}=\sum_{j=0}^{N-1}b_j\ket{u_j}.
+\end{equation}
+Together with Eqn.~\ref{eqn:solutionofA} and Eqn.~\ref{eqn:inverseofA}, we can see 
+\begin{equation}
+    \begin{split}
+        \ket{x}&=\left(\sum_{j=0}^{N-1}\lambda_j^{-1}\ket{u_j}\bra{u_j}\right)\left(\sum_{i=0}^{N-1}b_i\ket{u_i}\right)\\
+        &=\sum_{j=0}^{N-1}\sum_{i=0}^{N-1}\lambda_j^{-1}b_i\ket{u_j}\langle u_j|u_i\rangle \\
+        &=\sum_{j=0}^{N-1}\lambda_j^{-1}b_j\ket{u_j}.
+    \end{split}
+    \label{eqn:expandX}
+\end{equation}
+It is apparent from the Eqn.~\ref{eqn:expandX} that if we want to figure out $\ket{x}$, we need to know the knowledge of the eigenvalues of $A$, which can be obtained from the PE algorithm above. Therefore, we have the circuit below to help us do the job.
+\begin{figure}
+    \centering
+    \begin{quantikz}
+        \lstick{$\ket{0}$} & \slice{$\ket{\psi_0}$} & \slice{$\ket{\psi_1}$} & \slice{$\ket{\psi_2}$} & \gate{\hat{R}}\slice{$\ket{\psi_3}$}&\meter{}& \qw & \rstick{$\ket{1}$} \\
+        \lstick{$\ket{0}^{\otimes n_l}$} & \qwbundle{n_l} && \gate[2]{PE}&\ctrl{-1}&&\gate[2]{PE^\dagger}&\rstick{$\ket{0}$} \\
+        \lstick{$\ket{0}^{\otimes n_b}$} & \qwbundle{n_b} & \gate{\hat{U}_b} & & & & & \rstick{$\ket{x}$}
+    \end{quantikz}
+    \caption{Circuit of HHL}
+    \label{fig:HHL}
+\end{figure}
+
+\subsection{Sample-based Quantum Diagonalization of a Chemistry Hamiltonian}
+Sample-based quantum diagonalization (SQD) algorithm \cite{Robledo_Moreno_2025, ibm2024sqd} is a method for finding eigenvalues and eigenvectors of quantum opertors, using quantum and distributed classical computing together. Classical distributed computing is used to process samples obtained from a quantum processor, and to project and diagonalize a target Hamiltonian in a subspace spanned by them. SQD is known to work well when the target eigenstate is sparse.
+
+In \ref{sec:MappingMethods}, we have learned in quantum chemistry the formalism of second quantization can be used to describe the electronic structure of a molecule. Upon the definition of annihilation operator and creation operator, we also defined their anti-commutation relations in Eqn.~\ref{eqn:anti-comm}. However, in this construction, the spin, which is an important feature of electron, was not taken into account. To compensate that, we introduce lables $\hat{\alpha}_{p\sigma}$, where $\sigma$ is used to include either spin-up state $\alpha$ or spin-down state $\beta$. Accordingly, Eqn~\ref{eqn:secondQuantizedHam} is updated into
+\begin{equation}
+    \hat{H}=\sum_{pr\sigma}h_{pr}\hat{a}^{\dagger}_{p\sigma}\hat{a}_{r\sigma}+\frac{1}{2}\sum_{prqs\sigma\tau}h_{prqs}\hat{a}^{\dagger}_{p\sigma}\hat{a}^{\dagger}_{q\tau}\hat{a}_{s\tau}\hat{a}_{r\sigma},
+\end{equation}
+where again $h_{pr}$ and $h_{prqs}$ are complex numbers from molecular integrals.
+
+\subsubsection{Unitary Cluster Jastrow (UCJ) ansatz}
+SQD requires a quantum circuit ansatz to draw samples from Local UCJ (LUCJ) \cite{motta2023lucj}, due to its combination of physics and hardware friendliness, is adopted here. This ansatz is based on UCJ ~\cite{Jastrow1955} which was first proposed by Robert Jastrow to solve many-body problem with strong forces. To address the short range strong force problem, he introduced a product of  exponentialized wavefunctions containing a parameter that can be used in variational computation to reach the minimum energy of a quantum system. This wavefunction, which is later called unitary cluster Jastrow (UCJ), can fit into the current quantum computing to solve quantum chemistry problem. It looks like
+\begin{equation}
+    |\psi\rangle=\prod_{\mu=1}^{L}e^{\hat{K}_\mu}e^{i\hat{J}_\mu}e^{-\hat{K}_\mu}|\Phi_0\rangle,
+    \label{eqn:UCJ}
+\end{equation}
+where $|\Phi_0\rangle$ is a reference state, often taken to be the Hartree-Fock state, and the $\hat{K}_\mu$ and $\hat{J}_\mu$ are defined as \cite{ibm2024sqd,motta2023lucj}
+\begin{equation}
+    \hat{K}_\mu=\sum_{pq,\sigma}K^\mu_{pq}\hat{a}^\dagger_{p\sigma}\hat{a}_{q\sigma}, \: \hat{J}_\mu=\sum_{pq,\sigma\tau}J_{pq,\sigma\tau}^\mu\hat{n}_{p\sigma}\hat{n}_{q\tau},
+    \label{eqn:1-2-bodyOperator}
+\end{equation}
+where $\hat{n}_{p\sigma}=\hat{a}^\dagger_{p\sigma}\hat{a}_{p\sigma}$ is known as the number operator and $K_{pq}^\mu$ is the complex matrix elements forms an anti-Hermitian matrix, whereas $J_{pq,\sigma\tau}^\mu$ is real and it forms a symmetric matrix. To maintain the spin symmetry, $\hat{J}$ should commute with the z-component of the total spin operator $S_z=\frac{1}{2}\sum_p(\hat{n}_{p\alpha}-\hat{n}_{p\beta})$, which is in essence the weighted summation of particle number. Therefore, the conditions like
+\begin{equation}
+    J_{pq,\alpha\alpha}^\mu=J_{pq,\beta\beta}^\mu, \: J_{pq,\alpha\beta}^\mu=J_{pq,\beta\alpha}^\mu
+\end{equation}
+should be guaranteed. Meanwhile, note that commutation with $S^2$ operator requires $J_{pq,\alpha\alpha}^\mu=J_{pq,\alpha\beta}^\mu$, eqn (\ref{eqn:1-2-bodyOperator}) can be reorganized and written as
+\begin{multline}
+    \hat{J}_\mu=2\sum_pJ_{pp,\alpha\beta}^\mu\hat{n}_{p\alpha}\hat{n}_{p\beta}+4\sum_{p<q}J_{pq,\alpha\beta}^\mu\hat{n}_{p\alpha}\hat{n}_{q\beta}+2\sum_pJ_{pp,\alpha\alpha}^\mu[\hat{n}_{p\alpha}+\hat{n}_{p\beta}] \\
+    +2\sum_{p<q}J_{pq,\alpha\alpha}^\mu[\hat{n}_{p\alpha}\hat{n}_{q\alpha}+\hat{n}_{p\beta}\hat{n}_{q\beta}]
+    \label{eqn:rewriteJ}
+\end{multline}
+On the right of the eqn (\ref{eqn:rewriteJ}), the first term is on-site opposite-spin term; the second one is the non-diagonal opposite-spin term; the third term is the on-site same-spin term, and the last one is the non-diagonal same-spin term.
+
+In eqn (\ref{eqn:UCJ}), the operator $e^{\hat{K}_\mu}$ is also regarded as the rotational operator over the orbitals whose function is to rotate the given basis to new basis. By doing so, the redistribution of the electrons within the orbitals is realized. In this process, the total number of electrons and their spin state are conserved. From the point of view of group theory, the unitary rotational operator $e^{\hat{K}_\mu}$ is a Lie group element while the operator $\hat{K}_\mu$ as its Lie algebra generator. In practice, such a rotation is realized on the quantum computing circuit via a serise of Givens rotation which will be disscussed in details later. In contrast, the number-number interaction operator $\hat{J}_\mu$ realizes the modulation of electron correlation. Therefore, unlike $\hat{K}_\mu$， it is a two-body operator. The sandwitch shape structure $e^{\hat{K}_\mu}e^{i\hat{J}_\mu}e^{-\hat{K}_\mu}$ composed of those two types of operators is a similarity transformatioFn. When it is applied onto a reference state like we saw in eqn (\ref{eqn:UCJ}), it implies three steps. First, it rotates reference state $|\psi_0\rangle$ into new orbital basis via $e^{-\hat{K}_\mu}$, then $e^{i\hat{J}_\mu}$ will exert electron correlation modulation on the new basis, i.e. the Jastrow factor. After that, it will change the basis back via $e^{\hat{K}_\mu}$.
+
+Now, suppose we are going to use the widely used JW mapping scheme (see section \ref{sec:MappingMethods}), $N$ spatial orbitals should be mapped onto a system of $2N$ qubits,
+\begin{equation}
+    \hat{a}^\dagger_{p\alpha}\mapsto(S_+)_p Z_{(p-1)}... Z_0, \: \hat{a}^\dagger_{p\beta}\mapsto(S_+)_{N+p} Z_{N+p-1}...Z_0,
+\end{equation}
+where $(S_+)_p=(X_p+iY_p)/2$ is the raising operator for qubit $p$. From here we can see, to achieve linear connectivity, we need $\mathcal{O}(N^2)$ Givens rotations acting on adjacent qubits. Considering eqn (\ref{eqn:rewriteJ}), the operator $e^{i\hat{J}_\mu}$ is mapped onto a quantum circuit of the form
+\begin{equation}
+    \begin{split}
+        e^{i\hat{J}_\mu}&\mapsto\prod_p v_{p,p+N}(2J_{pp,\alpha\beta}^\mu)\prod_{p<q}v_{p,q+N}(4J_{pq,\alpha\beta}^\mu)\prod_{p}w_p(2J_{pp,\alpha\alpha}^\mu)w_{p+N}(2J_{pp,\alpha\alpha}^\mu) \\
+    &\times\prod_{p<q}(2J_{pq,\alpha\beta}^\mu)v_{p+N,q+N}(2J_{pq,\alpha\beta}^\mu),
+    \end{split}   
+    \label{eqn:mapofJmu} 
+\end{equation}
+where $w_p(\phi)=e^{-i\frac{\phi}{4}Z_p}$ is a single-qubit gate and
+\begin{equation}
+    v_{p,q}(\phi)=e^{-i\frac{\phi}{4}(Z_p+Z_q-Z_pZ_q)}
+\end{equation}
+is a two-qubit gate. Eqn (\ref{eqn:mapofJmu}) indicates that we need $\mathcal{O}(N^2)$ two-qubit gates with all-to-all connectivity. In summary, we can say the UCJ is not applicabale to current hardware.
+\subsubsection{Local Unitary Cluster Jastrow (LUCJ)}
+To overcome the problem of UCJ addressed in the previous subsection, we introduce ``local'' approximation of the UCJ ansatz, which needs the following modifications for opposite-spin and same-spin number-number terms:
+\begin{equation}
+    \sum_{pq}J_{p\alpha,q\beta}\hat{n}_{p\alpha}\hat{n}_{p\beta}\rightarrow\sum_pJ_{p\alpha,p\beta}\hat{n}_{p\alpha}\hat{n}_{p\beta}
+    \label{eqn:sparse1}
+\end{equation}
+\begin{equation}
+    \sum_{pq}J_{p\sigma,q\sigma}\hat{n}_{p\sigma}\hat{n}_{q\sigma}\rightarrow\sum_pJ_{p\sigma,(p+1)\sigma}\hat{n}_{p\sigma}\hat{n}_{(p+1)\sigma},\:\text{where}\:\sigma=\alpha,\beta
+    \label{eqn:sparse2}
+\end{equation}
+From the two equations above, we can see the summation over $p$ and $q$ is simplified into summation of $p$ only. By doing so, we neglect all the terms with $p\neq q$ so that only diagonal double occupation penalty terms are kept for opposite-spin terms. As for the same-spin term, the summation is performed over neigboring terms. Obviously, this approximation only takes into account the strongest electronic repulsion. In other words, two sparse matrices with the elements of $J_{p\alpha,q\alpha}^\mu$ and $J_{p\alpha,q\beta}^\mu$ respectively are formed. This allows us to implement the circuit in a constant depth with limited connectivity. For example, if the connectivity is a square lattice show in the figure \ref{fig:SquareCon}.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.3\textwidth]{square_connect.png}
+    \caption{Square Connectivity}
+    \label{fig:SquareCon}
+\end{figure}
+ In vector form, the summation corresponding to eqns (\ref{eqn:sparse1}, \ref{eqn:sparse2})
+\begin{equation}
+    \begin{split}
+        &\boldsymbol{J}^{\alpha\alpha}:\{(p,p+1), p=0,...,N-2\} \\
+        &\boldsymbol{J}^{\alpha\beta}:\{(p,p),p=0,...,N-1\}
+    \end{split}
+\end{equation} 
+ Similarly, in the case of the heavy-hex lattice (see fig \ref{fig:heavyHex}), the sparse matrices are
+ \begin{equation}
+    \begin{split}
+        &\boldsymbol{J}^{\alpha\alpha}:\{(p,p+1), p=0,...,N-2\} \\
+        &\boldsymbol{J}^{\alpha\beta}:\{(p,p),p=0,4,8,...(p\leq N-1)\}
+    \end{split}
+ \end{equation}
+ \begin{figure}
+    \centering
+    \includegraphics[width=0.4\textwidth]{heavy_hex.png}
+    \caption{Heavy-hex lattice}
+    \label{fig:heavyHex}
+ \end{figure}

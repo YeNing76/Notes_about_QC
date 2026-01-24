@@ -1,0 +1,190 @@
+
+\section{Derivation of Formulae}
+\renewcommand{\theequation}{\thesection.\arabic{equation}}
+\setcounter{equation}{0}
+\subsection{Laplacian of two electron system}
+\label{subsec:Laplacian}
+The following derivation is for the Eqn. (2) in \cite{giner2021transcorrelated}, which is Eqn.~(\ref{eqn:HeliumHamiltonian}) here. It is about the Hamiltonian of the helium atom using $r_i=|\textbf{r}_i|$ and $r_{12}=|\textbf{r}_1-\textbf{r}_2|$ coordinates
+\begin{equation}
+    H=h_c+\frac{1}{r_{12}}
+\end{equation}
+where 
+\begin{equation}
+    \begin{split}
+        h_c=&-\frac{1}{2}\sum_{i=1}^{2}\left(\frac{\partial^2}{\partial r_i^2}+\frac{2}{r_i}\frac{\partial}{\partial r_i}+\frac{2Z}{r_i}\right)-\left(\frac{\partial^2}{\partial r_{12}^2}+\frac{2}{r_{12}}\frac{\partial}{\partial r_{12}}\right) \\
+        &-\left(\frac{\textbf{r}_1}{r_1}\cdot\frac{\textbf{r}_{12}}{r_{12}}\frac{\partial}{\partial r_1}+\frac{\textbf{r}_2}{r_2}\cdot\frac{\textbf{r}_{21}}{r_{21}}\frac{\partial}{\partial r_2}\right).
+    \end{split}    
+    \label{eqn:HeliumHamiltonian}
+\end{equation}
+Suppose $f(r)$ is a scalar function of $r$, then
+\begin{equation}
+    \nabla\cdot\left(\hat{\textbf{r}}f(r)\right)=\frac{\partial}{\partial x}\left(\frac{x}{r}f(r)\right)+\frac{\partial}{\partial y}\left(\frac{y}{r}f(r)\right)+\frac{\partial}{\partial z}\left(\frac{z}{r}f(r)\right).
+\end{equation}
+Let us concentrate on $\frac{\partial}{\partial x}\left(\frac{x}{r}f(r)\right)$ first, it can be expanded into 
+\begin{equation}
+    \frac{\partial}{\partial x}\left(\frac{x}{r}f(r)\right)=\frac{\partial}{\partial x}\left(\frac{x}{r}\right)f(r)+\frac{x}{r}\frac{\partial}{\partial x}\left(f(r)\right).
+\end{equation}
+Considering $r=\sqrt{x^2+y^2+z^2}$, we have $\frac{\partial}{\partial x}(\frac{x}{r})=\frac{y^2+z^2}{r^3}$ and $\frac{\partial}{\partial x}(f(r))=\frac{\partial f}{\partial r}\frac{\partial r}{\partial x}=\frac{x}{r}\frac{\partial f}{\partial r}$. Therefore, we obtain
+\begin{equation}
+    \frac{\partial}{\partial x}\left(\frac{x}{r}f(r)\right)=\frac{y^2+z^2}{r^3}f(r)+\frac{x^2}{r^2}\frac{\partial f}{\partial r}
+    \label{eqn:theFirstTerm}
+\end{equation}
+The other two terms can be handled in the same way, and we get 
+\begin{equation}
+    \frac{\partial}{\partial y}\left(\frac{y}{r}f(r)\right)=\frac{x^2+z^2}{r^3}f(r)+\frac{y^2}{r^2}\frac{\partial f}{\partial r}
+    \label{eqn:theSecondTerm}
+\end{equation}
+and
+\begin{equation}
+    \frac{\partial}{\partial z}\left(\frac{z}{r}f(r)\right)=\frac{x^2+y^2}{r^3}f(r)+\frac{z^2}{r^2}\frac{\partial f}{\partial r}.
+    \label{eqn:theThirdTerm}
+\end{equation}
+From Eqn. (\ref{eqn:theFirstTerm}), (\ref{eqn:theSecondTerm}) and (\ref{eqn:theThirdTerm}), we eventually reach
+\begin{equation}
+    \nabla\cdot\left(\hat{\textbf{r}}f(r)\right)=\frac{2}{r}f(r)+\frac{\partial f}{\partial r}.
+    \label{eqn:FirstOrderofNabla}
+\end{equation}
+Based on the coordinates we are using, we have 
+\begin{equation}
+    \nabla_1\cdot\nabla_1=\nabla_1\cdot\left(\hat{\textbf{r}}_1\frac{\partial\psi}{\partial r_1}\right)+\nabla_1\cdot\left(\hat{\textbf{r}}_{12}\frac{\partial\psi}{\partial r_{12}}\right).
+    \label{eqn:SecondNabla}
+\end{equation}
+Using Eqn. (\ref{eqn:FirstOrderofNabla}), the first term on the right side of Eqn. (\ref{eqn:SecondNabla}) can be written into
+\begin{equation}
+    \nabla_1\cdot\left(\hat{\textbf{r}}_1\frac{\partial\psi(r)}{\partial r_1}\right)=\frac{2}{r_1}\psi(r)+\frac{\partial\psi(r)}{\partial r_1}\rightarrow\left(\frac{2}{r_1}\frac{\partial}{\partial r_1}+\frac{\partial^2}{\partial r_1^2}\right)\psi(r),
+    \label{eqn:secondNablaonr_1a}
+\end{equation}
+where $r$ is used to denote the whole coordinates ($r_1, r_2, r_{12}$).
+As to the second term on the right side of Eqn. (\ref{eqn:SecondNabla}), it is 
+\begin{equation}
+    \begin{split}
+        \nabla_1\cdot\left(\hat{\textbf{r}}_{12}\frac{\partial\psi}{\partial r_{12}}\right)=&\frac{\partial}{\partial x_1}\left(\frac{x_1-x_2}{r_{12}}\frac{\partial\psi(r)}{\partial r_{12}}\right) \\
+        &+\frac{\partial}{\partial y_1}\left(\frac{y_1-y_2}{r_{12}}\frac{\partial\psi(r)}{\partial r_{12}}\right)+\frac{\partial}{\partial z_1}\left(\frac{z_1-z_2}{r_{12}}\frac{\partial\psi(r)}{\partial r_{12}}\right)
+    \end{split}
+    \label{eqn:secondNabla_2}    
+\end{equation}
+where $r_{12}=\sqrt{(x_1-x_2)^2+(y_1-y_2)^2+(z_1-z_2)^2}$, which is a function of $x_1, x_2, y_1, y_2, z_1, z_2$. Therefore, we need the chain rule to perform the derivative. Let's start with the first term on the right side of Eqn. (\ref{eqn:secondNabla_2}):
+\begin{equation}
+    \begin{split}
+        &\frac{\partial}{\partial x_1}\left(\frac{x_1-x_2}{r_{12}}\frac{\partial\psi}{\partial r_{12}}\right)  \\
+        &=\frac{\partial}{\partial x_1}\left(\frac{x_1-x_2}{r_{12}}\right)\frac{\partial\psi}{\partial r_{12}}+\frac{x_1-x_2}{r_{12}}\frac{\partial}{\partial x_1}\left(\frac{\partial\psi}{\partial r_{12}}\right) \\
+        &=\left[\frac{1}{r_{12}}-\frac{(x_1-x_2)^2}{r_{12}^3}\right]\frac{\partial\psi}{\partial r_{12}}+\frac{x_1-x_2}{r_{12}}\left[\frac{\partial^2\psi}{\partial r_1\partial r_{12}}\frac{\partial r_1}{\partial x_1}+\frac{\partial^2\psi}{\partial r_{12}^2}\frac{\partial r_{12}}{\partial x_1}\right] \\
+        &=\frac{(y_1-y_2)^2+(z_1-z_2)^2}{r_{12}^3}\frac{\partial\psi}{\partial r_{12}}+\frac{x_1(x_1-x_2)}{r_1r_{12}}\frac{\partial^2\psi}{\partial r_1\partial r_{12}}+\frac{(x_1-x_2)^2}{r_{12}^2}\frac{\partial^2\psi}{\partial r^2_{12}}.
+    \end{split}
+    \label{eqn:A_11_1}
+\end{equation}
+Similarly, we have
+\begin{equation}
+    \begin{split}
+        &\frac{\partial}{\partial y_1}\left(\frac{y_1-y_2}{r_{12}}\frac{\partial\psi(r)}{\partial r_{12}}\right) \\
+        &=\frac{(x_1-x_2)^2+(z_1-z_2)^2}{r_{12}^3}\frac{\partial\psi}{\partial r_{12}}+\frac{y_1(y_1-y_2)}{r_1r_{12}}\frac{\partial^2\psi}{\partial r_1\partial r_{12}}+\frac{(y_1-y_2)^2}{r_{12}^2}\frac{\partial^2\psi}{\partial r^2_{12}}
+    \end{split}
+    \label{eqn:A_11_2}
+\end{equation}
+and
+\begin{equation}
+    \begin{split}
+        &\frac{\partial}{\partial z_1}\left(\frac{z_1-z_2}{r_{12}}\frac{\partial\psi(r)}{\partial r_{12}}\right) \\
+        &=\frac{(x_1-x_2)^2+(y_1-y_2)^2}{r_{12}^3}\frac{\partial\psi}{\partial r_{12}}+\frac{z_1(z_1-z_2)}{r_1r_{12}}\frac{\partial^2\psi}{\partial r_1\partial r_{12}}+\frac{(z_1-z_2)^2}{r_{12}^2}\frac{\partial^2\psi}{\partial r^2_{12}}.
+    \end{split}
+    \label{eqn:A_11_3}
+\end{equation}
+Sum up Eqns (\ref{eqn:A_11_1}, \ref{eqn:A_11_2}) and (\ref{eqn:A_11_3}), we can rewrite Eqn. (\ref{eqn:secondNabla_2}) into
+\begin{equation}
+    \nabla_1\cdot\left(\hat{\textbf{r}}_{12}\frac{\partial\psi}{\partial r_{12}}\right)=\frac{2}{r_{12}}\frac{\partial\psi}{\partial r_{12}}+\hat{\textbf{r}}_1\cdot\hat{\textbf{r}}_{12}\frac{\partial^2\psi}{\partial r_1\partial r_{12}}+\frac{\partial^2\psi}{\partial r^2_{12}}.
+    \label{eqn:secondNabla_part2}
+\end{equation}
+Now, after substituting Eqn. (\ref{eqn:secondNablaonr_1a}) and Eqn. (\ref{eqn:secondNabla_part2}) into Eqn. (\ref{eqn:SecondNabla}), we get
+\begin{equation}
+    \nabla_1\cdot\nabla_1\psi=\frac{2}{r_1}\frac{\partial\psi}{\partial r_1}+\frac{\partial^2\psi}{\partial r_1^2}+\frac{2}{r_{12}}\frac{\partial\psi}{\partial r_{12}}+\hat{\textbf{r}}_1\cdot\hat{\textbf{r}}_{12}\frac{\partial^2\psi}{\partial r_1\partial r_{12}}+\frac{\partial^2\psi}{\partial r^2_{12}}
+    \label{eqn:Laplacian_1}
+\end{equation}
+Repeat the same procedures, we can find the expansion of $\nabla_2\cdot\nabla_2$, which is
+\begin{equation}
+    \nabla_2\cdot\nabla_2\psi=\frac{2}{r_2}\frac{\partial\psi}{\partial r_2}+\frac{\partial^2\psi}{\partial r_2^2}+\frac{2}{r_{12}}\frac{\partial\psi}{\partial r_{12}}+\hat{\textbf{r}}_2\cdot\hat{\textbf{r}}_{12}\frac{\partial^2\psi}{\partial r_2\partial r_{12}}+\frac{\partial^2\psi}{\partial r^2_{12}}
+    \label{eqn:Laplacian_2}
+\end{equation}
+Join Eqn. (\ref{eqn:Laplacian_1}) and Eqn. (\ref{eqn:Laplacian_2}) together, we can recover the Eqn. (45a) in \cite{HYLLERAAS19641}, which is
+\begin{equation}
+    \begin{split}
+        \nabla_1^2\psi+\nabla_2^2\psi&=\frac{\partial^2\psi}{\partial r_1^2}+\frac{2}{r_1}\frac{\partial\psi}{\partial r_1}+\frac{\partial^2\psi}{\partial r_2^2}+\frac{2}{r_2}\frac{\partial\psi}{\partial r_2}+2\frac{\partial^2\psi}{\partial r_{12}^2} \\
+        &+\frac{4}{r_{12}}\frac{\partial\psi}{\partial r_{12}}+\hat{\textbf{r}}_1\cdot\hat{\textbf{r}}_{12}\frac{\partial^2\psi}{\partial r_1\partial r_{12}}+\hat{\textbf{r}}_2\cdot\hat{\textbf{r}}_{12}\frac{\partial^2\psi}{\partial r_2\partial r_{12}}.
+    \end{split}
+\end{equation}
+% \begin{equation}
+%     \underbrace{a + b + c}_{\phantom{xx}\text{注释}}
+% \end{equation}
+\subsection{Exponentiate Matrix}
+If we have a real number $x$ and a matrix $A$ such that $A^2=I$, we can prove
+\begin{equation}
+    \exp(iAx)=\cos(x)I+i\sin(x)A.
+    \label{eqn:ExponentiateMatrix}
+\end{equation}
+Making use of the Taylor expansion of exponential function 
+\begin{equation}
+    e^x=\sum_{n=0}^{\infty}\frac{x^n}{n!}=1+x+\frac{x^2}{2!}+\frac{x^3}{3!}+\frac{x^4}{4!}+\cdots,
+    \label{eqn:TaylorExp}
+\end{equation}
+we get
+\begin{equation}
+    \begin{split}
+        \exp(iAx)&=1+iAx+\frac{(iAx)^2}{2!}+\frac{(iAx)^3}{3!}+\frac{(iAx)^4}{4!}+\cdots\\
+        &=1+iAx-\frac{x^2}{2!}I-\frac{iAx^3}{3!}+\frac{x^4}{4!}I+\frac{iAx^5}{5!}+\cdots\\
+        &=\cos(x)I+i\sin(x)A.
+    \end{split}
+\end{equation}
+With Eqn.~(\ref{eqn:ExponentiateMatrix}), we can easily understand the property of \textit{rotation operators} about $\hat{x},\hat{y}$ and $\hat{z}$:
+\begin{equation}
+    R_x(\theta)\equiv e^{-i\theta X/2}=\cos\left(\frac{\theta}{2}\right)I-i\sin\left(\frac{\theta}{2}\right)X=\begin{bmatrix}
+        \cos\frac{\theta}{2}&-i\sin\frac{\theta}{2}\\-i\sin\frac{\theta}{2}&\cos\frac{\theta}{2}
+    \end{bmatrix}
+\end{equation}
+\begin{equation}
+    R_y(\theta)\equiv e^{-i\theta Y/2}=\cos\left(\frac{\theta}{2}\right)I-i\sin\left(\frac{\theta}{2}\right)Y=\begin{bmatrix}
+        \cos\frac{\theta}{2}&-\sin\frac{\theta}{2}\\\sin\frac{\theta}{2}&\cos\frac{\theta}{2}
+    \end{bmatrix}
+\end{equation}
+\begin{equation}
+    R_z(\theta)\equiv e^{-i\theta Z/2}=\cos\left(\frac{\theta}{2}\right)I-i\sin\left(\frac{\theta}{2}\right)Z=\begin{bmatrix}
+        e^{-i\theta/2}&0\\0&e^{i\theta/2}.
+    \end{bmatrix}
+\end{equation}
+If the rotation by $\theta$ is about a real unit vector $\hat{n}=(n_x, n_y, n_z)$, the epxpressions can be generalized into 
+\begin{equation}
+    R_{\hat{n}}(\theta)\equiv\exp(-i\theta\hat{n}\cdot\vec{\sigma}/2)=\cos\left(\frac{\theta}{2}\right)I-i\sin\left(\frac{\theta}{2}\right)(n_xX+n_yY+n_zZ).
+\end{equation}
+Now, let's talk about another topic: \textbf{Baker-Campbell-Hausdorf formula} (BCH), which is usually expressed as
+\begin{equation}
+    e^Xe^Y=e^Z,
+    \label{eqn:BCH1}
+\end{equation}
+where 
+\begin{equation}
+    Z=X+Y+\frac{1}{2}[X,Y]+\frac{1}{12}\left[X,[X,Y]\right]-\frac{1}{12}\left[Y,[X,Y]\right]+\cdots.
+    \label{eqn:Z}
+\end{equation}
+To prove Eqn.~(\ref{eqn:BCH1}), we need to make use the following Taylor's expansion:
+\begin{equation}
+    \ln(1+x)=x-\frac{x^2}{2}+\frac{x^3}{3}-\frac{x^4}{4}+\cdots+(-1)^{n+1}\frac{x^n}{n}+\cdots\quad\text{with}\quad-1<x\le 1.
+    \label{eqn:TaylorLn1+x}
+\end{equation}
+Applying Eqn.~(\ref{eqn:TaylorExp}) onto $e^X$ and $e^Y$, and multiplying them together, we get
+\begin{equation}
+    \begin{split}
+        e^Xe^Y&=\left(1+X+\frac{X^2}{2!}+\frac{X^3}{3!}+\frac{X^4}{4!}+\cdots\right)\left(1+Y+\frac{Y^2}{2!}+\frac{Y^3}{3!}+\frac{Y^4}{4!}+\cdots\right)\\
+        &=1+Y+X+\frac{Y^2}{2!}+XY+\frac{X^2}{2!}+\frac{Y^3}{3!}+\frac{XY^2}{2!}+\frac{X^2Y}{2!}+\frac{X^3}{3!}+\frac{Y^4}{4!}+\frac{XY^3}{3!}\\
+        &+\frac{X^2Y^2}{2!2!}+\frac{X^3}{3!}Y+\frac{X^4}{4!}+\cdots.
+    \end{split}
+\end{equation}
+If we only care about the order only to three, we can let $x=Y+X+\frac{Y^2}{2!}+XY+\frac{X^2}{2!}+\frac{Y^3}{3!}+\frac{XY^2}{2!}+\frac{X^2Y}{2!}+\frac{X^3}{3!}$ so that we can use Eqn.~(\ref{eqn:TaylorLn1+x}) to figure out the result of expanding $\ln(e^Xe^Y)$ to the power of three. After \href{https://www.youtube.com/watch?v=vt3_uYU98RI}{some tedious algebraic processes}, we can recover the result identical to Eqn.~(\ref{eqn:Z}).
+
+However, the Eqn. (29) in \cite{feniou2025realspacechemistryquantumcomputers} is NOT directly from the BCH formula presented here. It is obtained from the same idea we obtain the BCH: expansion of the exponential function to the order we need (here we approximate to the order of 2 for $\tau$).
+\begin{equation}
+    \begin{split}
+        \tilde{H} &\coloneqq e^{-\tau}\hat{H}e^{\tau} \\
+        &=\left(1-\tau+\frac{\tau^2}{2!}\right)\hat{H}\left(1+\tau+\frac{\tau^2}{2}\right) \\
+        &=\hat{H}+\hat{H}\tau+\hat{H}\frac{\tau^2}{2}-\tau\hat{H}-\tau\hat{H}\tau+\frac{\tau^2}{2}\hat{H} \\
+        &=\hat{H}+[\hat{H},\tau]+\frac{1}{2}\left[[\hat{H},\tau],\tau\right].
+    \end{split}
+    \label{eqn:TruncatSecondOrder}
+\end{equation}

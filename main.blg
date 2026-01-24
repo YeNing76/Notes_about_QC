@@ -1,0 +1,68 @@
+This is BibTeX, Version 0.99d
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+Reallocating 'name_of_file' (item size: 1) to 17 items.
+A level-1 auxiliary file: introduction.aux
+Reallocating 'name_of_file' (item size: 1) to 8 items.
+A level-1 auxiliary file: VQE.aux
+Reallocating 'name_of_file' (item size: 1) to 10 items.
+A level-1 auxiliary file: Basis.aux
+Reallocating 'name_of_file' (item size: 1) to 11 items.
+A level-1 auxiliary file: Qiskit.aux
+Reallocating 'name_of_file' (item size: 1) to 14 items.
+A level-1 auxiliary file: algorithm.aux
+Reallocating 'name_of_file' (item size: 1) to 17 items.
+A level-1 auxiliary file: adaptiveGrid.aux
+Reallocating 'name_of_file' (item size: 1) to 23 items.
+A level-1 auxiliary file: FormulaeDerivation.aux
+Reallocating 'name_of_file' (item size: 1) to 20 items.
+A level-1 auxiliary file: SpecialFunction.aux
+Reallocating 'name_of_file' (item size: 1) to 10 items.
+A level-1 auxiliary file: latex.aux
+Reallocating 'name_of_file' (item size: 1) to 6 items.
+The style file: unsrt.bst
+Reallocating 'name_of_file' (item size: 1) to 11 items.
+Database file #1: references.bib
+Warning--empty booktitle in HYLLERAAS19641
+You've used 20 entries,
+            1791 wiz_defined-function locations,
+            587 strings with 9018 characters,
+and the built_in function-call counts, 5060 in all, are:
+= -- 328
+> -- 439
+< -- 3
++ -- 155
+- -- 135
+* -- 406
+:= -- 909
+add.period$ -- 61
+call.type$ -- 20
+change.case$ -- 18
+chr.to.int$ -- 0
+cite$ -- 21
+duplicate$ -- 191
+empty$ -- 400
+format.name$ -- 135
+if$ -- 1059
+int.to.chr$ -- 0
+int.to.str$ -- 20
+missing$ -- 21
+newline$ -- 103
+num.names$ -- 20
+pop$ -- 65
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 83
+stack$ -- 0
+substring$ -- 156
+swap$ -- 38
+text.length$ -- 3
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 1
+while$ -- 30
+width$ -- 22
+write$ -- 217
+(There was 1 warning)

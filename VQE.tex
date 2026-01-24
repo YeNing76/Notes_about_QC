@@ -1,0 +1,327 @@
+\section{The Variational Quantum Eigensolver (VQE)}
+The following contents are mainly from~\cite{Peruzzo2014VQE, Abhijith2018QuantumBeginner}. Before the invention of VQE, the quantum approach to eigenvalue problem is quantum phase estimation (QPE). In this algorithm, the eigenvector $\ket{\psi}$ of a Hermitian operator $\mathcal{H}$ is regarded as input and the problem is to calculate the corresponding eigenvalue $\lambda$, which is determined by successive application of $e^{-i\mathcal{H}t}$ onto $\ket{\psi}$. However, this method needs millions or billions of quantum gates for practical application while only tens to hundreds of gates are available right now. 
+
+To overcome this difficulty, VQE is introduced to solve the eigenvalue problem by figuring out the $\ket{\psi}$ that can minimizes the so-called Rayleigh-Ritz quotient:
+\begin{equation}
+    \frac{\bra{\psi}\mathcal{H}\ket{\psi}}{\langle\psi\ket{\psi}},
+\end{equation}
+via a variational method. To realize the quantum computation, the Hamiltonian should be written into the second quantization form:
+\begin{equation}
+    \mathcal{H}=\sum_{p,q}h_{pq}a^\dagger_pa_q+\frac{1}{2}\sum_{p,q,r,s}h_{pqrs}a^\dagger_pa^\dagger_q a_r a_s,
+    \label{eqn:secondQuantizedHam}
+\end{equation}
+where $a^\dagger_p$ and $a_p$ are fermionic creation and annihilation operators, respectively. The real numbers ``$h$''s are one- or two-electron integrals that can be easily computed on a classical computer. Then this formulation should be further mapped onto a quantum computer to calculate
+\begin{equation}
+    \label{secondQuantizedH}
+    \mathcal{H}=\sum_{i\alpha}h^i_\alpha\sigma^i_\alpha + \sum_{ij\alpha\beta}h^{ij}_{\alpha\beta}\sigma^i_\alpha\sigma^j_\beta+\dots.
+\end{equation}
+ Here Latin indices identify the subsystem on which the operator acts, and Greek indices identify different type of Pauli operators. For now, there are three different mapping schemes, and the mapping process will be discussed further below. Regardless the choice of mapping method, the equation above sometimes is written as
+ \begin{equation}
+    \mathcal{H}=\sum_j\alpha_j P_j=\sum_j\alpha_j\prod_\alpha\sigma_\alpha^j,
+ \end{equation}
+ where $\alpha_j$ are real scalar coefficients depend on the $h$s, and $P_j$ are called Pauli words (strings), representing a product of Pauli matrices.
+ Based on the equation (\ref{secondQuantizedH}), the expectation value of $\mathcal{H}$ is expressed as:
+ \begin{equation}
+    \langle\mathcal{H}\rangle=\sum_{i\alpha}\langle\sigma_\alpha^i\rangle+\sum_{ij\alpha\beta}\langle\sigma_\alpha^i\sigma_\beta^j\rangle+\dots.
+ \end{equation}
+ 
+\subsection{Something about ADAPT-VQE}
+ADAPT-VQE  is a smart greedy algorithm. However, it constructs the ansatz by including the exciting operators (single-excitation, double-excitation) in a term-by-term manner (organically growth). For each step of including a new term, the purpose is to maximize the energy drop (energy gradient), regardless whether if it is a violation of the symmetry of the system. As a result, it can give rise to a low-energy but non-physical state, such as violating the conservation of particle number or spin symmetry.
+\subsection{Valence Bonding}
+The first formula in \cite{UnbChemistry} is like
+\begin{equation}
+     |H_2\rangle= \cos(\frac{\theta}{2})|\sigma\bar{\sigma}\rangle+\sin(\frac{\theta}{2})|\sigma^*\bar{\sigma}^*\rangle, 
+     \label{valenceBonding}
+\end{equation}
+where $\sigma $ means bonding and $\sigma^*$ means anti-bondig orbital. The bar used here means that the electron in this orbital is spin-down. Therefore, $|\sigma\bar{\sigma}\rangle$ denotes a pair of bonding orbital electrons, one spin-up, the other spin-down. In other words, those symbols are used to clearly label in which orbit the electron is in and its spin direction. 
+In this formula, $\cos(\frac{\theta}{2})$ and $\sin(\frac{\theta}{2})$ are two important parameterized coefficients, as they reflect \textbf{the proportionality of quantum superposition} of the bonding orbital states and antibonding obital states. In other words, those two parameters control whether the electrons tend to the ``stable combination'' or to the ``exited combination'' of the chemical bonds. $|\sigma\bar{\sigma}\rangle$ denote that the two electrons are in the $\sigma$ orbital (bond-forming orbital), forming the stable covalence bond. Meanwhile, $|\sigma^*\bar{\sigma}^*\rangle$ is an unstable state. The superposition of those two states gives rise to a more flexible and adjustable wavefunction. The reason that we use the single $\theta$ rather than two independent parameters is that by doing so we can guarantee the automatic normalization of the wave functions, which is $\cos^2\frac{\theta}{2}+\sin^2\frac{\theta}{2}=1$. This is a quantum-circuit-friendly expression which means, it can be easily mapped into a rotation gate.
+
+For a single qubit, the application of the rotation gate on a $\ket{0}$ is as follows:
+\begin{lstlisting}[language=Python, caption=Sample Python Code, frame=single]
+from qiskit import QuantumCircuit
+from qiskit.circuit.library import RYGate
+
+theta = 1.2  # Define angle
+qc = QuantumCircuit(1)
+qc.ry(theta, 0)  # Or use: qc.append(RYGate(theta), [0])
+qc.draw()
+\end{lstlisting}
+
+% \begin{figure}[h]
+%     \centering
+%     \begin{quantikz}
+%         \lstick{$\ket{0}$} & \gate{RY(\theta)} & \qw
+%     \end{quantikz}
+%     \caption{Caption}
+%     \label{fig:enter-label}
+% \end{figure}
+    
+\begin{equation}
+    \begin{quantikz}
+        \lstick{$\ket{0}$} & \gate{RY(\theta)} & \qw
+    \end{quantikz},    
+\end{equation}
+and matrix form of the single qubit rotation gate is:
+\begin{equation}
+    R_Y(\theta)=\begin{bmatrix}
+    \cos(\frac{\theta}{2}) & -\sin(\frac{\theta}{2}) \\ \sin(\frac{\theta}{2}) & \cos(\frac{\theta}{2})
+    \end{bmatrix}
+\end{equation}
+Therefore, assume the initial state of a qubit is $\ket{0}=\begin{bmatrix}1\\0\end{bmatrix}$, then after the rotation via the gate, it turns out to be 
+\begin{equation}
+    \ket{\psi}=R_Y(\theta)\ket{0}=\begin{bmatrix}
+        \cos(\frac{\theta}{2}) \\ \sin(\frac{\theta}{2})
+    \end{bmatrix} = \cos(\frac{\theta}{2})\ket{0}+\sin(\frac{\theta}{2})\ket{1},
+\end{equation}
+which is exactly the wavefunction of a hydrogen molecule. 
+
+The following formula is Eq. (4) in \cite{UnbChemistry}. 
+\begin{equation}
+    \begin{quantikz}
+\lstick{\ket{0}} & \gate{RY(\theta_0)} & \ctrl{1} & \qw \\
+\lstick{\ket{0}} & \gate{RY(\theta_1)} & \targ{}  & \qw
+\end{quantikz}
+\end{equation}
+Its corresponding Qiskit should be:
+\begin{lstlisting}[language=Python, caption=Sample Python Code, frame=single]
+from qiskit import QuantumCircuit
+import numpy as np
+
+theta = 1.2  # 可任意调整角度
+qc = QuantumCircuit(2)
+qc.ry(theta, 0)  # θ₀ = θ
+qc.ry(np.pi, 1)  # θ₁ = π
+qc.cx(0, 1)
+qc.draw('mpl')
+\end{lstlisting}
+Functionality of each part:
+\begin{itemize}
+    \item \tcbox[inlinebox]{$R_Y(\theta)$}: Exerting Y-axis rotation on the first qubit, constructing the linear superposition of $\ket{\sigma}$ and $\ket{\sigma^*}$.
+    \item \tcbox[inlinebox]{$R_Y(\pi)$}: rotating the second qubit to its ground state $\ket{1}$, corresponding to the spin-down electron.
+    \item \tcbox[inlinebox]{$CNOT(0\rightarrow1)$}: introducing the entanglement, forming the\textbf{ resonant mixed state} rather than the simple multiplication state of the electron, which is exactly the superposition relation reflected in Eq. \ref{valenceBonding}.
+\end{itemize}
+
+\subsection{Mapping Methods}
+\label{sec:MappingMethods}
+In the following three subsections, we briefly describe an essential process in quantum computation -- mapping. Actually, the process is one of the fundamental difference between the quantum computation and the classical computation. Of course, this process requires extra over-head or even some sophisticated algorithms.  
+
+First, we need to explain why we need this procedure. Unlike the classical system, qubit cannot be read without wavefunction collapse. For this reason, ``parity'' should be coded rather than being stored. It should manifest itself naturally in the state evolvement process. For the same reason, keeping the anti-commutativity of the fermionic operators must be a ``measurement-free'' structural operation, requiring the automatic change of the sign.  This requirement can only be achieved by the dynamic construction process of the qubit gates, not the afterward correction by classical bits. In addition, the advantage of quantum computation is essentially based on quantum entanglement and quantum superposition, while in many scenarios, parity is tightly related to the entangled structure. Therefore, parity, as an important quantum feature, is not a certain value that can be stored by a classical bit. For example, in the following superposition state,
+\begin{equation}
+    \ket{\psi}=\frac{1}{\sqrt{2}}(\ket{0100}+\ket{1011}),
+\end{equation}
+one cannot tell electron is in which orbital exactly, since the coexistence of the two states. Parity is decided by the ``number of the electrons in certain interval'', and this number can only be obtained from  measurement after the collapse of the wavefunction.
+
+Meanwhile, in the framework of second quantization, a fermionic orbit can be either vacant or occupied, similar to the classical bit (0 or 1). As we know, the qubit can only be either $\ket{1}$ or $\ket{0}$ or their superposition, therefore, it is nature to use a qubit to represent a fermionic orbit. This in turn makes it feasible to map a fermionic Hamiltonian into a qubit Hamiltonian, hence the algorithms like VQE or QPE.
+
+To this end, we define three types of set, and one of the important tasks of mapping schemes is to update those sets correctly:
+\begin{table}[ht]
+\centering
+\caption{Three Key Sets in Bravyi--Kitaev Mapping}
+\label{tab:bksets}
+\begin{tabular}{|l|p{0.7\linewidth}|}
+\hline
+\textbf{Set} & \textbf{Description} \\
+\hline
+Update set & Qubits that must be flipped when a mode changes. \\
+Parity set & Tracks parity of modes before the current one. \\
+Occupation set & Tracks whether a mode is occupied. \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsubsection{Jordan-Wigner Mapping (JWM)}
+Jordan-Wigner mapping is used to convert Fermion operator into spin operator such as Pauli matrix. At first, it was established to solve 1-D spin chain model, but now it is widely used in quantum chemistry and quantum physics simulation. Its key idea is to map each orbital in the Fermion system to a qubit, and use Pauli matrix to represent Fermion operator, without changing the anti-commute property.
+Here is a simplified version of mapping formula:
+\begin{equation}
+    a^\dagger_j=\left(\prod_{k=0}^{j-1}Z_k\right)\cdot \frac{X_j-iY_j}{2},
+    \label{simplifiedJWM}
+\end{equation}
+where $X_j, Y_j, Z_j$ are the $j^{th}$ qubit on the Pauli matrix. $\prod_{k=0}^{j-1}Z_k$ is also called the \textbf{Z chain}, its functionality is to guarantee that when we exchange the Fermions, a  negative sign can be correctly introduced so that the overall anti-commutativity is maintained. Please note, in the equation above, when $k=0$, we follow the rule: 
+\begin{equation}
+    \prod_{\text{empty product}}=1.
+\end{equation} 
+The anti-commutation relations are:
+\begin{equation}
+\begin{aligned}
+    \{a_i,a_j\} &= a_ia_j+a_ja_i \\
+    \{a^\dagger_i, a^\dagger_j\} &= 0 \\
+    \{a_i, a^\dagger_j\} &= \delta_{ij}
+\end{aligned} 
+\label{eqn:anti-comm}
+\end{equation}
+When we are going to map the fermionic operator to the Pauli matrix, we need to keep the anti-commutativity structure. In Jordan-Wigner mapping, the operator on the $j^{th}$ orbital can be expressed as:
+\begin{itemize}
+    \item Creation Operator:
+    \begin{equation}
+        a^\dagger_j=\left(\prod_{k=0}^{j-1}Z_k\right)\cdot\frac{X_j-iY_j}{2}        
+    \end{equation}
+    \item Annihilation Operator:
+    \begin{equation}
+        a_j=\left(\prod_{k=0}^{j-1}Z_k\right)\cdot\frac{X_j+iY_j}{2} ,     
+    \end{equation}
+\end{itemize}
+It is obvious that when the system is complex enough, the Z chain will be very long which causes a deep circuit. Luckily, this in NOT the only way to maintain the overall anti-commutativity. There are two well-known methods can address the anti-commutativity more efficiently. They are \textbf{Parity Mapping} and \textbf{Bravyi-Kitaev Mapping}.
+
+\subsubsection{Parity Mapping}
+Rather than ``memorizing how may Fermion are there on the left side of the orbital'', the Parity Mapping method records the ``Parity'' directly. Its creation operator is like:
+\begin{equation}
+    a^\dagger_j=\left(\prod_{k\in P(j)}Z_k\right)\cdot\frac{X_j-iY_j}{2},
+\end{equation}
+where $P(j)$ is the orbital collection related to the $j^{th}$ orbital, used to guarantee the anti-commutativity. The advantage of this idea is this mapping method does not need the Z chain get longer with the increment of the orbital number. On the contrary, it may become shorter. It can keep the symmetrical property of the system better under some circumstances, such as the projection of spins. However, this mapping strategy is not so straightforward as the JWM, so that the Parity Mapping process is more complicated and harder to debug than JWM.  
+
+\subsubsection{Bravyi-Kitaev Mapping (BKM)}
+%\subsubsection{\texorpdfstring{Bravyi-Kitaev Mapping (BKM)~\cite{transfer2015BKmapping}}{Bravyi-Kitaev Mapping (BKM)}}
+This is a more sophisticated mapping method, which distribute information to many qubits. It can track down the \textbf{local occupation} and the \textbf{accumulation of parity} at the same time. It uses a balanced way to encode the anti-commutativity into the circuit to achieve the following two competing goals:
+\begin{itemize}
+    \item \textbf{Locality}: minimizing how many qubits a single fermionic operator affects.
+    \item \textbf{Efficiency}: reducing the number of quantum gates needed to simulate fermionic interactions.
+\end{itemize}
+To achieve those goals, \textbf{binary tree structure} is used to encode both \textbf{occupation} and \textbf{parity} information, allowing it to update fewer qubits when simulating fermionic creation/annihilation operators.
+
+Specifically, BKM updates three key sets listed in Table~\ref{tab:bksets} via a transformation matrix, and this transformation matrix is set up in a recursive manner. This leads to a more compact and efficient representation of the system's Hamiltonian.
+
+In this method, we need to generate a so-called Bravyi-Kitaev basis ($\vec{b}_n$) from the occupation state vector ($\vec{f}_n$) via a square transformation matrix $\beta_n$ such that $\beta_n\vec{f}_n=\vec{b}_n$. The matrix $\beta_n$ is constructed in a recursive manner:
+\begin{equation}
+    \beta_{2^x}=\left[\begin{array}{c|c}
+        \beta_{2^{x-1}} & 0 \\
+        \hline
+        \begin{matrix}
+            0\\ \leftarrow 1 \rightarrow
+        \end{matrix} & \beta_{2^{x-1}}
+    \end{array}
+        \right] \qquad \text{where} \: \beta_1=\left(1\right)
+\end{equation}
+Let's repeate the example in~\cite{transfer2015BKmapping}, for eight qubits, $\beta_n\vec{f}_n=\vec{b}_n$ is specified into (\textcolor{red}{all sums in mod(2)}): 
+\begin{equation}
+    \label{8bits}
+    \begin{bmatrix}
+        1&0&0&0&0&0&0&0\\
+        1&1&0&0&0&0&0&0\\
+        0&0&1&0&0&0&0&0\\
+        1&1&1&1&0&0&0&0\\
+        0&0&0&0&1&0&0&0\\
+        0&0&0&0&1&1&0&0\\
+        0&0&0&0&0&0&1&0\\
+        1&1&1&1&1&1&1&1
+    \end{bmatrix}
+    \begin{bmatrix}
+        f_0\\f_1\\f_2\\f_3\\f_4\\f_5\\f_6\\f_7
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        f_0\\f_1+f_0\\f_2\\f_3+f_2+f_1+f_0\\
+        f_4\\f_5+f_4\\f_6\\f_7+f_6+f_5+f_4+f_3+f_2+f_1+f_0
+    \end{bmatrix}.
+\end{equation}
+From the right side of Eq.~\ref{8bits}, we can figure out the rules for constructing Update Set. If the occupation state of the first orbit is changed, then those need to be updated components of $\vec{b}_n$ are $b_0, b_1, b_3$ and $b_7$, not all of them. Similarly, when $f_1$ is changed, the Update Set contains only $b_1$, $b_3$ and $b_7$. We don't need to consider components with even label in $\vec{b}_n$, since those items contain only the occupation state of that orbital itself, and in the Update Set, the orbital itself is NOT included. If we want to construct Update Set $U(j)$, then $b_0$ to $b_j$ need not be checked, since those components do not contain the information of orbital $j$. The reason is the transformation matrix is a lower triangular matrix. For example, if $f_3$ is changed, $b_0$, $b_1$ and $b_2$ will not be affected.
+
+Given the $\vec{f}_n$, to figure out the Parity Set is not a difficult job, as long as we make use of matrix
+\begin{equation}
+    [\pi_n]_{ij}=\begin{cases}
+        1, & \qquad \text{if} \; i<j \\
+        0, & \qquad \text{otherwise}
+    \end{cases}.
+\end{equation}
+Then $\pi_n \vec{f}_n$ will give us the Parity Set.
+
+The analysis above tells us if we have already known the $\vec{b}_n$, then we can obtain occupation bais by $\beta_n^{-1}\vec{b}_n=\vec{f}_n$, and by multiplying $\pi_n\beta_n^{-1}$ on the Bravyi-Kitaev basis we can find out the parity.
+
+Once again, using eight qubits as an example, we can see 
+\begin{equation}
+    \beta^{-1}_8=
+    \begin{bmatrix}
+        1&0&0&0&0&0&0&0\\
+        1&1&0&0&0&0&0&0\\
+        0&0&1&0&0&0&0&0\\
+        0&1&1&1&0&0&0&0\\
+        0&0&0&0&1&0&0&0\\
+        0&0&0&0&1&1&0&0\\
+        0&0&0&0&0&0&1&0\\
+        0&0&0&1&0&1&1&1
+    \end{bmatrix}.
+\end{equation}
+And again, this reverse matrix can be constructed from a recursive relation:
+\begin{equation}
+    \beta_{2^x}=
+    \left[\begin{array}{c|c}
+        \beta_{2^{x-1}}^{-1} & 0 \\
+        \hline
+        0_1 & \beta_{2^{x-1}}^{-1}
+    \end{array}\right] 
+    \qquad \text{where} \: \beta_1^{-1}=\left[1\right]
+\end{equation}
+\vspace{0.5em}
+\hrule
+\vspace{0.5em}
+\textit{\textbf{Reflection:} Although the discussion above shows the effectiveness of the one-orbit-to-one-qubit mapping method, it may not be the only solution to current situation, and it is potentially problematic. First, it suffers from ``over-abstraction'', which means after the complicated electron wave functions are compressed into binary occupation states, the information about symmetry, entanglement and group structure may be lost. What make things worse is the risk of generating non-physical states, such as the state that violate the conservation of spin, etc. Many body wave function is more than a simple combination of the orbital occupation, it also contains coupling and correlation between the states, which cannot be covered perfectly only by qubits.}
+
+\textit{To overcome those defects, people are thinking of other solutions. For example, Tensor Network Quantum Simulation (TNQS) \cite{TensorNetwork}  does not use ``orbit occupation'' as the fundemental block, instead, it uses an entangled structure to describe the whole wavefunction. Group-equivariant Ansatz (GEA) uses group structure to construct variational state. Quantum Natural Orbitals plus Subspace Encoding method makes use of classical calculation to obtain the principle orbitals and then encode the subspace state. Bosonic or Fermionic Simulation Framework skip over the step of orbital mapping, it uses qubit to denote the vector or the symmetrical spatial wavefunction.}
+
+
+
+\subsection{Measuring the Qubit Circuit}
+Suppose we have
+\begin{equation}
+    \langle H\rangle =\sum_i h_i\bra{\psi}P_i\ket{\psi},
+\end{equation}
+where $P_i$ is the Pauli words like $X_0Y_1Z_2$,  the $h_i$ is the corresponding real coefficient, and $\ket{\psi}$ is the current output ansatz quantum state. Then the question is how to measure $\bra{\psi}P_i\ket{\psi}$ in the qubit circuit?
+
+Now, take Pauli words $P_i=Z_0Z_1$ as an example, we need to take the following steps to measure:
+\begin{enumerate}
+    \item \textbf{Preparing the state}: Use the variational circuit to generate $\ket{\psi}=U(\bar{\theta})\ket{0\dots0}$.
+    \item \textbf{Choosing the measuring base}: For example, if we want to measure $Z_0Z_1$, we need to perform Z base measurement on the $0th$ and the $1st$ qubit, which is the default measurement. Once we get two results $m_0, m_1\in\{+1, -1\}$, we calculate product $m_0\cdot m_1$. Except the default measurement, to perform other types of measurements, we need to add base conversion gate before the measurement:
+    \begin{table}[h!]
+        \centering
+        \caption{Base Conversion Gate}
+        \label{tab:BaseConversion}
+        \begin{tabular}{c|l}
+        \toprule
+          The target Pauli word   & The corresponding gate to be added \\
+        \midrule
+            X & Hadamard gate \\
+            Y & $S^\dagger+$ Hadamard gate \\
+            Z & Don't need to add any gate \\
+        \bottomrule
+        \end{tabular}
+    \end{table}
+    \item \textbf{Repeating measurement and calculating the average value}: We need to repeat the measurement of $P_i$ many times to get many samples (shots), say 1024 times, to obtain average value of product:
+    \begin{equation}
+        \langle P_i\rangle \approx \frac{1}{N}\sum_{j=1}^N m_0^{(j)}\cdot m_1^{(j)}\cdot\dots ,
+    \end{equation}
+    then we multiply this by $h_i$ to obtain the contribution to the energy from this term.
+\end{enumerate}
+The relevant Qiskit code can be found in Listing~\ref{lst:CircuitMeasure}.
+
+\subsection{Transverse-Field Ising Model}
+The \textbf{Transverse-Field Ising Model} referred to in \cite{UnbChemistry} is a typical quantum spin model, which is widely used in the study of quantum phase transition, entanglement, and the design of the variational algorithm in the quantum computation.
+
+For the 2-site system, \cite{UnbChemistry} shows that the Hamilton as:
+\begin{equation}
+    \hat{H}_{2-site}=-JZ_0Z_1-h(X_0+X_1), 
+\end{equation}
+where:
+\begin{itemize}
+    \item $Z_i$, $X_i$ are the Pauli-Z and Pauli-X operator on the ith qubit.
+    \item $J$ is the coupling strength between spins (along the $Z$ direction).
+    \item $h$ is the strength of the transverse magnetic field (along the $X$ direction).
+\end{itemize}
+The first term, $-JZ_0Z_1$, tends to (anti)align the neighboring spin along the z-direction, describing the spin interaction. The second term, $-h(X_0+X_1)$, introduces the transverse magnetic field, makes the spin flip along the X-direction, describes the quantum fluctuation. Competition between those two terms gives rise to the quantum phase transition, which means the system changes from the ordered state (spin aligns) to the disordered state (spin flips).
+\subsection{One-shot Calculation}
+One-shot calculation means in VQE, a complete calculation is performed upon a certain set of parameters without referring to previous results of those parameters in the course of the ``continuous evolvement''.
+
+More specifically, in \cite{UnbChemistry}, there are two optimization strategies:
+\begin{enumerate}
+    \item Default strategy \begin{itemize}
+        \item Each calculation starts with a randomly initialized angle;
+        \item Every parameter, such as length of bond, different model parameters, will be optimized independently.
+        \item Pros: One can jump to any point in the parametric space without worrying about the history.
+        \item Cons: It is easy to get stuck in the local minimum, especially in a complex system.
+    \end{itemize}
+    \item Adiabatic strategy \begin{itemize}
+        \item Start from a relative easier parameter, such as the balance bonding length.
+        \item Then change the parameters gradually, each new iteration starts with the optimized parameter from the previous circle.
+        \item Pros: More stable, unlikely to get stuck in local minimum;
+        \item Cons: Cannot jump to any point easily, one must ``cover the whole path''.
+    \end{itemize}
+\end{enumerate}

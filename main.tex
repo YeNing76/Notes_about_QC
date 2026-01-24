@@ -1,0 +1,89 @@
+\documentclass{article}
+\usepackage[UTF8]{ctex}
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{float}
+\graphicspath{{images/}}
+\usepackage{booktabs}
+\usepackage[numbers]{natbib}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathrsfs}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{bm}
+%\usepackage{tikz}
+\usepackage{quantikz} % 用来画量子电路
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{arrows.meta, positioning}
+\usepackage{listings}
+\usepackage{csquotes}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{ltablex}
+\keepXColumns
+\usepackage{booktabs}
+\usepackage{caption}
+% \usepackage[backend=biber]{biblatex}
+% \addbibresource{references.bib} % 替换为你的 .bib 文件名
+
+\usepackage[colorlinks=true, linkcolor=blue, urlcolor=cyan]{hyperref}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+%\usepackage{braket}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{axiom}{Axiom}
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}[section]
+
+\tcbset{
+   inlinehighlight/.style={
+    on line,
+    boxrule=0.5pt,
+    colframe=orange!80!black,
+    colback=orange!20,
+    arc=2pt,
+    boxsep=1pt
+  }，
+  highlightstyle/.style={
+  enhanced,
+  colback=yellow!10,
+  colframe=orange!80!black,
+  boxrule=0.5pt,
+  arc=3pt,
+  auto outer arc,
+  fonttitle=\bfseries,
+  boxed title style={
+    colback=orange!30,
+    colframe=orange!80!black
+  }  
+},
+inlinebox/.style={enhanced, boxrule=0.5pt, colframe=orange!80!black, colback=orange!20, sharp corners, left=1pt, right=1pt, top=1pt, bottom=1pt, boxsep=0pt, arc=2pt, before skip=0pt, after skip=0pt, frame hidden=false, on line}
+}
+
+\title{My Note of Studying the Quantum Computation}
+\author{Ye Ning}
+\date{July， 05， 2025}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\include{introduction}
+\include{VQE}
+\include{Basis}
+\include{Qiskit}
+\include{algorithm}
+\include{adaptiveGrid}
+\appendix
+\include{FormulaeDerivation}
+\include{SpecialFunction}
+\include{latex}
+\bibliographystyle{unsrt}
+\bibliography{references}
+\end{document}

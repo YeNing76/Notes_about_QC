@@ -1,0 +1,139 @@
+\begin{thebibliography}{10}
+
+\bibitem{Peruzzo2014VQE}
+Alberto Peruzzo, Jarrod McClean, Peter Shadbolt, Man-Hong Yung, Xiao-Qi Zhou,
+  Peter~J. Love, Alán Aspuru-Guzik, and Jeremy~L. O'Brien.
+\newblock A variational eigenvalue solver on a photonic quantum processor.
+\newblock {\em Nature Communications}, 5:4213, 2014.
+
+\bibitem{Abhijith2018QuantumBeginner}
+Abhijith J., Adetokunbo Adedoyin, John Ambrosiano, Petr Anisimov, William
+  Casper, Gopinath Chennupati, Carleton Coffrin, Hristo Djidjev, David Gunter,
+  Satish Karra, Nathan Lemons, Shizeng Lin, Alexander Malyzhenkov, David
+  Mascarenas, Susan Mniszewski, Balu Nadiga, Daniel O’Malley, Diane Oyen,
+  Scott Pakin, Lakshman Prasad, Randy Roberts, Phillip Romero, Nandakishore
+  Santhi, Nikolai Sinitsyn, Pieter~J. Swart, James~G. Wendelberger, Boram Yoon,
+  Richard Zamora, Wei Zhu, Stephan Eidenbenz, Andreas Bärtschi, Patrick~J.
+  Coles, Marc Vuffray, and Andrey~Y. Lokhov.
+\newblock Quantum algorithm implementations for beginners.
+\newblock {\em arXiv preprint arXiv:1804.03719}, 2022.
+
+\bibitem{UnbChemistry}
+Seyed~Ehsan Ghsempoury, Gehard~W. Dueck, and Stjin~De Baerdemacker.
+\newblock Modular cluster circuits for the variational quantum eigensolver.
+\newblock {\em arXiv: 2305.04425v3}, 2023.
+
+\bibitem{transfer2015BKmapping}
+A.~Tranter, S.~Sofia, J.~Seeley, M.~Kaicher, J.~McClean, R.~Babbush, P.~V.
+  Coveney, F.~Mintert, F.~Wilhelm, and P.~J. Love.
+\newblock The bravyi–kitaev transformation: Properties and applications.
+\newblock {\em Int. J. Quantum Chem}, 115:1431--1441, 2015.
+
+\bibitem{TensorNetwork}
+Aleksandr Berezutskii, Minzhao Liu, Atithi Acharya, Roman Ellerbrock, Johnnie
+  Gray, Reza Haghshenas, Zichang He, Abid Khan, Viacheslav Kuzmin, Dmitry
+  Lyakh, Danylo Lykov, Salvatore Mandra, Christopher Mansell, Alexey Melnikov,
+  Artem Melnikov, Vladimir Mironov, Dmitry Morozov, Florian Neukart, Alberto
+  Nocera, Michael~A. Perlin, Michael Perelshtein, Matthew Steinberg, Ruslan
+  Shaydulin, Benjamin Villalonga, Markus Pflitsch, Marco Pistoia, Valerii
+  Vinokur, and Yuri Alexeev.
+\newblock Tensor networks for quantum computing.
+\newblock {\em arXiv preprint}, 2025.
+
+\bibitem{NielsenChuang2010}
+Michael~A. Nielsen and Isaac~L. Chuang.
+\newblock {\em Quantum Computation and Quantum Information}.
+\newblock Cambridge University Press, Cambridge, UK, 10th anniversary edition
+  edition, 2010.
+
+\bibitem{Hidary2019QCBook}
+Jack~D. Hidary.
+\newblock {\em Quantum Computing: An Applied Approach}.
+\newblock Springer International Publishing, Cham, Switzerland, 2019.
+
+\bibitem{RobertLoredo2020}
+Robert Loredo.
+\newblock {\em Learn Quantum Computing with Python and IBM Quantum Experience}.
+\newblock Packt Publishing Ltd., Levery Place, 35 Livery Street, Birmingham,
+  UK, 2020.
+
+\bibitem{Robledo_Moreno_2025}
+Javier Robledo-Moreno, Mario Motta, Holger Haas, Ali Javadi-Abhari, Petar
+  Jurcevic, William Kirby, Simon Martiel, Kunal Sharma, Sandeep Sharma,
+  Tomonori Shirakawa, Iskandar Sitdikov, Rong-Yang Sun, Kevin~J. Sung, Maika
+  Takita, Minh~C. Tran, Seiji Yunoki, and Antonio Mezzacapo.
+\newblock Chemistry beyond the scale of exact diagonalization on a
+  quantum-centric supercomputer.
+\newblock {\em Science Advances}, 11(25), June 2025.
+
+\bibitem{ibm2024sqd}
+{IBM Quantum Team}.
+\newblock Sample-based quantum diagonalization of a chemistry hamiltonian.
+\newblock
+  \url{https://quantum.cloud.ibm.com/docs/en/tutorials/sample-based-quantum-diagonalization},
+  2024.
+\newblock Accessed: 2025-08-01.
+
+\bibitem{motta2023lucj}
+Mario Motta, Kevin~J. Sung, K.~Birgitta Whaley, Martin Head-Gordon, and James
+  Shee.
+\newblock Bridging physical intuition and hardware efficiency for correlated
+  electronic states: the local unitary cluster jastrow ansatz for electronic
+  structure.
+\newblock {\em Chemical Science}, 14:11213, 2023.
+
+\bibitem{Jastrow1955}
+R~Jastrow.
+\newblock Many-body problem with strong forces.
+\newblock {\em Phys. Rev}, 98, 1955.
+
+\bibitem{feniou2025realspacechemistryquantumcomputers}
+César Feniou, Christopher Cherfan, Julien Zylberman, Baptiste Claudon,
+  Jean-Philip Piquemal, and Emmanuel Giner.
+\newblock Real-space chemistry on quantum computers: A fault-tolerant algorithm
+  with adaptive grids and transcorrelated extension, 2025.
+
+\bibitem{Georges_2025}
+Timothy~N Georges, Bjorn~K Berntson, Christoph Sünderhauf, and Aleksei~V
+  Ivanov.
+\newblock Pauli decomposition via the fast walsh-hadamard transform.
+\newblock {\em New Journal of Physics}, 27(3):033004, February 2025.
+
+\bibitem{inproceedings}
+Guang~Hao Low and Yuan Su.
+\newblock Quantum eigenvalue processing.
+\newblock In {\em Proceedings of the 65th Annual IEEE Symposium on Foundations
+  of Computer Science (FOCS)}, pages 1051--1062, 10 2024.
+
+\bibitem{shao2020eigenvalue}
+Changpeng Shao and Jin-Peng Liu.
+\newblock Solving generalized eigenvalue problems by ordinary differential
+  equations on a quantum computer.
+\newblock {\em arXiv preprint arXiv:2010.15027}, 2020.
+
+\bibitem{cohen2019SimilarityTransformation}
+Aron~J. Cohen, Hongjun Luo, Kai Guther, Werner Dobrautz, David~P. Tew, and Ali
+  Alavi.
+\newblock Similarity transformation of the electronic schrödinger equation via
+  jastrow factorization.
+\newblock {\em The Journal of Chemical Physics}, 151(6):061101, 08 2019.
+
+\bibitem{giner2021transcorrelated}
+Emmanuel Giner.
+\newblock A new form of transcorrelated hamiltonian inspired by range-separated
+  dft.
+\newblock {\em arXiv preprint arXiv:2101.09944}, 2021.
+
+\bibitem{RS-DFT_Pernal}
+Katarzyna Pernal and Michał Hapka.
+\newblock Range-separated multiconfigurational density functional theory
+  methods.
+\newblock {\em WIREs Computational Molecular Science}, 12(2):e1566, 2022.
+
+\bibitem{HYLLERAAS19641}
+Egil~A. Hylleraas.
+\newblock The schrödinger two-electron atomic problem.
+\newblock volume~1 of {\em Advances in Quantum Chemistry}, pages 1--33.
+  Academic Press, 1964.
+
+\end{thebibliography}

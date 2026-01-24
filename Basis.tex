@@ -1,0 +1,92 @@
+\section{Use of the Basis}
+
+\subsection{\href{https://en.wikipedia.org/wiki/STO-nG_basis_sets}{STO-nG}}
+STO-nG is a short of ``\textbf{S}late-\textbf{T}ype \textbf{O}rital with \textbf{n} \textbf{G}aussians'', and the STO-3G is the simplest of the set. Take the STO-3G as an example, its main idea is to use 3 Gaussians to fit an approximate Slater type of orbital. There is a two-fold motivation behind this. One is that the STO is very close to the real atomic orbital shape but needs complicated computation; the other is that the Gaussians are efficient in calculation. Therefore, this scheme balances the physical precision and the computational efficiency.
+
+Mathematically, every atomic orbital (such as $1s$, $2s$ and $2p$) can be expressed as:
+\begin{equation}
+    \phi_{\text{STO-3G}}=\sum_{i=1}^3 c_i\cdot\phi_{\text{GTO}}(\alpha_i),
+\end{equation}
+where $c_i$ is the coefficient of each GTO, $\alpha_i$ is the exponential index of each GTO. All the GTO are the radial wavefunctions centered on the nuclear. Usually, those parameters are obtained via the least squares method.
+
+Taking the hydrogen molecule as an example, we can construct a complete quantum Hamiltonian for it step by step. First, we need to use tools like  \textit{Qiskit Nature} or \textit{PySCF} to decide geometry such as internuclear distance, such as 0.74 \text{\AA}, which is close to ground state. Then the basis STO-3G is chosen. After that, we need to initiate the Hartree-Fock calculation to obtain the single- and double- electron integration. Under STO-3G, two $1s$ orbitals (one for each hydrogen atom) are used. After Hatree-Fock, we get Hamiltonian like:
+\begin{equation}
+    \hat{H}=\sum_{pq}h_{pq}a^\dagger_pa_q+\frac{1}{2}\sum_{pqrs}h_{pqrs}a^\dagger_pa^\dagger_qa_ra_s.
+\end{equation}
+Therefore, we obtain four (spin) orbitals: 2 spatial orbitals times $\alpha, \beta$ spin leads to 4 fermionic up/down operator indices. We can now map the Hamilton into Pauli words by using either JWM or BKM. Taking JWM as an example, the mapping leads to:
+\begin{equation}
+    H=c_0I+c_1Z_0+c_2Z_1+c_3Z_0Z_1+c_4Y_0X_1X_2Y_3+\dots,
+\end{equation}
+in which every term such as $Z_0Z_1$, $Y_0X_1X_2Y_3$ etc. are measurable Pauli words, and each corresponding to a coefficient $c_i$. Those coefficients are the result of the collection of molecular integration after the anti-commutative expansions. The related Qiskit code is demonstrated in Listing~\ref{lst:HamiltonGeneration}.
+
+Now, let us take a closer look at the STO-3G for hydrogen molecule. As mentioned before, for each of the hydrogen atom, it approximate Slater orbital is:
+\begin{equation}
+    \phi_{\text{STO}}=Ne^{-\zeta r},
+\end{equation}
+and in STO-3G, this $1s$ orbital is approximately expressed as a linear comibination of 3 GTO:
+\begin{equation}
+    \phi^{\text{STO-3G}}_{1s}(r)=\sum_{i=1}^3 c_i\cdot\phi^{(i)}_{\text{GTO}}(r).
+\end{equation}
+More specifically, in spherical coordinate, a standard GTO is:
+\begin{equation}
+    \phi^{(i)}_{\text{GTO}}(r, \theta, \phi)=N_i\cdot Y_{l,m}(\theta,\phi)\cdot r^{2n}e^{-\alpha_i r^2},
+\end{equation}
+where $N_i$ is the normalization factor, $Y_{l,m}$ is the spherical harmonic function for the angular part, $r^{2n}$ is the polynomial radial part ($n=0$ is for the $1s$ orbital), $\alpha_i$ is the $i^{th}$ GTO Gaussian Index. As an example, for the $1s$ orbital of hydrogen, the angular part is $Y_{0,0}=\frac{1}{\sqrt{4\pi}}$, which is a constant, reflecting the fact that the $s$ orbital is isotropic. The radial part is $r^0=1$. Therefore, every GTO is simplified into
+\begin{equation}
+    \phi^{(i)}_{\text{GTO}}=N_i\cdot e^{-\alpha_i r^2}.
+\end{equation}
+
+\subsection{Hylleraas, the Possible Basis to Form Ansatz}
+Hylleraas base is a set of non-orthogonal base used in high precision calculation of electron's relation in traditional quantum chemical computation. It is especially good for two-electron system, such as Helium. In this base, inter-electronic distance $r_{12}$ is explicitly introduced  to capture the interrelation between the electrons precisely. Therefore, one of its typical wavefunctions is
+\begin{equation}
+    \phi(r_1, r_2, r_{12})=r_1^n\cdot r^m_2\cdot r_{12}^p\cdot e^{-\zeta(r_1+r_2)}.
+\end{equation}
+Those wavefunctions form the set of Hylleraas basis, which can be linearly combined into
+\begin{equation}
+    \Psi_{H_2}=\sum_{n,m,p}c_{nmp}\cdot r^n_1\cdot r^m_2\cdot r_{12}^p\cdot e^{-\zeta(r_1+r_2)},
+\end{equation}
+where the coefficient $c_{nmp}$ can be obtained via variation.
+
+To apply Hylleraas base to quantum computational chemistry, the challenges are:
+\begin{itemize}
+    \item Hylleraas base is usually not orthogonal, which means it is hard to map the base to the qubit.
+    \item It contains non-polynomial function such as $r_{12}$, which is not easy to be presented by the standard quantum gate.
+\end{itemize}
+After all, the current main-stream quantum mapping such as Jordan-Wigner, Bravyi-Kitaev are based on the orthogonal orbital structures.
+
+However, there is also a great potential of this investigation. If the Hylleraas base can be converted into appropriate quantum gates, it may decrease the complexity of ansatz dramatically. Meanwhile, it is apt to construct few-body high precision ansatz, especially for the 2-electron VQE.
+
+\subsection{Comparison Between two Types of Basis}
+\begin{table}[h!]
+    \centering
+    \caption{Comparison Between GTO and Hylleraas}
+    \label{tab:GTO&Hylleraas}
+    \begin{tabular}{lcr}
+        \toprule
+        \hline
+        Property & GTO & Hylleraas \\
+        \hline
+        \midrule
+        Exponential Part & $e^{-\alpha r^2}$ & $e^{-\zeta r}$ \\
+        \midrule 
+        Polynomial Part & $r^l$ & $r^n_1r^m_2r^p_{12}$ \\
+        \midrule 
+        Computational Efficiency & High & Low \\
+        \midrule 
+        Interelectronic Relation & Weak & Strong \\
+        \midrule
+        Application & Many-electron System & Two-electron System (He, $H_2$)\\
+        %\hline
+        \bottomrule
+    \end{tabular}
+\end{table}
+The biggest difference between the STO and Hylleraas is the orthogonality, which is defined as
+\begin{equation}
+    \int\phi^*_i(r)\phi_j(r)dr=0 \quad (\text{when} \, i\neq j).
+\end{equation}
+Orthogonality indicates the spatial independence of the orbital wavefunctions, which means orthogonal basis will not be "mixed up". Orthogonality plays an important role in the quantum circuit mapping. The challenges brought by the non-orthogonal basis may be:
+\begin{itemize}
+    \item Creation and anihilation operator are no longer anti-commutative, which means $\{a^\dagger_p,a_p\}$.
+    \item Electron state is no longer standard the tensor product state in Forc space. If the state cannot be expanded clearly, it will be difficult to be represented by the qubit.
+\end{itemize}
+To overcome the difficulties listed above, one of the possible solutions is "orthogonization", such as L\"{o}wdin method, which, of course, will bring extra complexity in qubit circuits.

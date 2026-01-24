@@ -1,0 +1,627 @@
+\section{Paper-reading related to adaptive grid method}
+In the paper \textit{Real-Space Chemistry on Quantum Computers: A Fault-Tolerant Algorithm with Adaptive Grids and Transcorrelated Extension} \cite{feniou2025realspacechemistryquantumcomputers}, an adaptive grid method for quantum chemistry presented in the form of first-quantized real-space formulation is given. The following subsections are about my investigation of this paper and the collection of my understanding related to the topics contained in this paper.
+\subsection{Voronoi Diagrams and Discretization of Wavefunction}
+This subsection is dedicated the understanding of Eqn. (13) in this paper, which is about the discretization of a single electron wavefunction onto a multi-center grid with $N$ points, and it looks like
+\begin{equation}
+    \ket{\psi_e}=\sum_{m=0}^{N-1}c_m\ket{m},
+    \label{eqn:discretizedBase}
+\end{equation}
+where $m$ runs through the indices of the cells in the Voronoi diagram.
+
+To understand this formula correctly, the word ``discretization" is the key. Using Voronoi diagram, we have divided the 3D space into $N$ non-overlapping cells. Each cell corresponds to a grid point.  Since $\ket{m}$ is a discretized base, it means although the base is defined on the whole 3D space, it concentrates on the corresponding $m$th Voronoi cell with complex amplitude $c_m$ which fulfils $\sum_{m=0}^{N-1}|c_m|^2=1$. That means on the Voronoi cell $Vor(m)$, value of $\ket{m}$ is 1, and zero anywhere else. Therefore, unlike the continuous wavefunction, we do not need to consider the continuous boundary condition between each Voronoi cells. In the Hilbert space, the basis $\ket{m}$ forms an orthonormal basis which fulfils
+\begin{equation}
+    \bra{m^{\prime}}m\rangle=\delta_{m^{\prime}m}.
+\end{equation}
+\begin{example}
+    Suppose we have divided the whole space into three Voronoi cells, corresponding to three basis: $\ket{0}=(1,0,0), \ket{1}=(0,1,0)$ and $\ket{2}=(0,0,1)$. Then the wavefunction can be written into
+    \begin{equation}
+        \ket{\psi}=c_0\ket{0}+c_1\ket{1}+c_2\ket{2}=(c_0,c_1,c_2).
+    \end{equation}
+    The scenario discussed above is for a single electron. If we have two electrons, each of them has 3 cells, then the dimensionality of the whole Hilbet space is $3\times 3=9$, and the wavefunction can be expressed as
+    \begin{equation}
+        \ket{\Psi}=\sum_{n,n=0}^{2}c_{mn}\ket{m}_1\otimes\ket{n}_2,
+    \end{equation}
+    which is mentioned later in the paper the tensor product of $\eta$ single-electron wavefunctions that lives in $\mathcal{H}_{\text{tot}}=\bigotimes_{i=1}^{\eta}\mathcal{H}_e$.
+\end{example}
+
+\subsection{Pauli decomposition}
+\subsubsection{Equation 22}
+ In order to understand the equation (22) in this paper, which looks like
+\begin{equation}
+    \bar{\textbf{H}}=\sum_{n,n=0}^{N-1}\omega_{mn}\sum_{i=0}^{\eta-1}\prod_{b=0}^{\log N - 1}\textbf{X}_{i\log N+b}^{m_b}\textbf{Z}_{i\log N+b}^{n_b}+\frac{1}{2}\sum_{m,p=0}^{N-1}\gamma_{mp}\sum_{i\neq j}^{\eta-1}\prod_{b=0}^{\log N-1}\textbf{Z}_{i \log N+b}^{m_b}\textbf{Z}_{j \log N+b}^{p_b},
+\end{equation}
+we track down to the paper \textit{Pauli Decomposition via the Fast Walsh-Hadamard Transform}\cite{Georges_2025}, which is a paper descibing the Pauli Linear Combination of Unitaries (LCU) decomposition.
+
+Within the paper \cite{Georges_2025}, the collection of the Pauli matrices (see Table \ref{tab:gates}), are included in a set $\mathscr{P} \coloneqq \{I, X, Y, Z\}$. Based on that, a set  $\mathscr{P}_n$ of the dimension  $\mathbb{C}^{2n\times2n}$ is defined by
+\begin{equation}
+    \mathscr{P}_n \coloneqq \left\{\bigotimes_{j=0}^{n-1}P_j\,:\,P_j\in\mathscr{P}\right\}
+\end{equation}
+where $n$ is an integer. Then any complex matrix $A\in\mathbb{C}^{2n\times2n}$ can be expanded into a weighted sum of tensor products as
+\begin{equation}
+A=\sum_{P\in\mathscr{P}}\alpha(P)P,
+\end{equation}
+where the mapping $\alpha\coloneqq\mathscr{P}_n\rightarrow\mathbb{C}$ is called the Pauli coefficient which is theoretically given by
+\begin{equation}
+    \alpha(P)=\frac{1}{2^n}\text{tr}(A^\dagger P) \;\text{where}\; P\in\mathscr{P}_n.
+    \label{eqn:PauliCoef}
+\end{equation}
+The problem to be addressed here is to compute the Pauli coefficients efficiently, since direct computation over Eqn~(\ref{eqn:PauliCoef}) has the scaling of  $\mathcal{O}(2^{5n})$. Plus, this equation is NOT easy to be used for LCU of a Hamiltonian or a matrix used in specific applications.
+
+To overcome the difficulty, the authors of paper \cite{Georges_2025} proved the following theorem first. This theorem is expressed as:
+\begin{theorem}
+    (Pauli decomposition of $A\in\mathbb{C}^{2n\times2n}$ via the Walsh-Hadamard transfrom). The following decomposition
+    \begin{equation}
+        A=\sum_{r,s=0}^{2^n-1}\alpha_{r,s}P_{r,s},
+    \end{equation}
+    where
+    \begin{equation}
+        P_{r,s}\coloneqq\bigotimes_{j=0}^{n-1}(i^{r_j\wedge s_j}X^{r_j}Z^{s_j})\in\mathscr{P}_n\quad(r,s\in[2^n-1]_0)
+    \end{equation}
+    and
+    \begin{equation}
+        \alpha_{r,s}\coloneqq\frac{i^{-|r\wedge s|}}{2^n}\sum_{q=0}^{2^n-1}a_{q\oplus r,q}{(H^{\otimes n})_{q,s}}\quad(r,s\in[2^n-1]_0)
+    \end{equation}
+    holds. Conversly, ``A'' can be recovered from its Pauli string decomposition according to 
+    \begin{equation}
+        \alpha_{r,s}=i^{|\bar{r}\wedge s|}\sum_{q=0}^{2^n-1}\alpha_{r\oplus s, q}(H^{\oplus n})_{q,s}.
+    \end{equation}
+    \label{theo:PauliDecomp}
+\end{theorem}
+In Theorem(\ref{theo:PauliDecomp}), the symboles $\wedge, \oplus$ and $\bar{.}$ are the bitwise AND, XOR, and NOT operators. The symbole $|\cdot|$ denotes the Hamming weight.  For a given integer $N$, we define $[N]_0\coloneqq\{0,1,\dots,N\}$. Therefore, 
+\begin{equation}
+    [2^n-1]_0\coloneqq\{0,1,\dots,2^n-1\}.
+    \label{eqn:numSet}
+\end{equation} 
+$r_j$ and $s_j$ are the binary expansion coefficients of $r$ and $s$, respectively. For the purpose of convenient reference, the well-known binary expansion for an integer $p$ is given as
+\begin{equation}
+    p=\sum_{j=0}^{n-1}p_j 2^j \quad (p_j\in\{0,1\})
+\end{equation}
+which defines a map $p\mapsto(p_j)_{j=0}^{n-1}\in\{0,1\}^n$. The bitwise XOR and AND are defined according to
+\begin{equation}
+    \text{XOR}: p\oplus q\coloneqq\sum_{j=0}^{n-1}(p_j\oplus q_j)2^j, \quad \text{AND}:p\wedge q\coloneqq\sum_{j=0}^{n-1}(p_j\wedge q_j)2^j\quad(p,q\in[2^n-1]_0).
+    \label{eqn:bitwiseOperator}
+\end{equation}
+The Hamming weight is calculated according to
+\begin{equation}
+    |p|\coloneqq\sum_{j=0}^{n-1}p_j\quad(p\in[2^n-1]_0).
+    \label{eqn:Hamming}
+\end{equation}
+\begin{example}
+    Suppose we are studying a system of 3 qubits, which means $n=3$. According to Eqn. (\ref{eqn:numSet}), the number set we are dealing with is $\{0, 1, \dots, 7\}$. Let $p=6$ and $q=7$, we can easily see their binary forms are $p=6_{10}=110_2$ and $q=7_{10}=111_2$, respectively. Now, by making use of Eqn. (\ref{eqn:bitwiseOperator}), we can find the results of bitwise operator between $p$ and $q$. For XOR, it is $p\oplus q=6\oplus7=(0\oplus1)2^0+(1\oplus1)2^1+(1\oplus1)2^2=1$. For AND, it is $p\wedge q=6\wedge7=(0\wedge1)2^0+(1\wedge1)2^1+(1\wedge1)2^2=6$. Of course, for Hamming weight, for $p=6$, it is 0+1+1=2
+    \label{exp:6.1}
+\end{example}
+Define a matrix unit for $\mathbb{C}^{2n\times2n}$ $E_{p,q}$ as
+\begin{equation}
+    E_{p,q}\coloneqq(\delta_{j,p}\delta_{k,q})_{j,k=0}^{2^n-1}\quad(p,q\in[2^n-1]_0),
+    \label{eqn:MatrixUnit}
+\end{equation}
+which can also be written in the form
+\begin{equation}
+    E_{p,q}=\bigotimes_{j=0}^{n-1}e_j(p,q),
+    \label{eqn:ExpandE}
+\end{equation}
+where
+\begin{equation}
+    e_j(p,q)\coloneqq(\delta_{k,p_j}\delta_{l,q_j})_{k,l=0}^1 \quad (j\in[n-1]_0;p,q\in[2^n-1]_0).
+    \label{eqn:Define_e}
+\end{equation}
+Once again, those three equations can be checked by using a special scenario such that $n=3, p=6$ and $q=7$. According to Eqn (\ref{eqn:Define_e}), we will obtain an 8*8 matrix in which only the element in row 7 and column 8 is 1 and the rest elements are all zeros. This 8*8 matrix can be expanded into $\begin{bmatrix}
+    0&0\\0&1
+\end{bmatrix}\otimes\begin{bmatrix}
+    0&0\\0&1
+\end{bmatrix}\otimes\begin{bmatrix}
+    0&1\\0&0
+\end{bmatrix}$, which confirms the Eqn. (\ref{eqn:ExpandE}) and Eqn. (\ref{eqn:Define_e}).
+Using the Pauli matrices as the basis, Eqn. (\ref{eqn:Define_e}) can be written into
+\begin{equation}
+    e_j(p,q)=\frac{1}{2}(X^{p_j\oplus q_j}+(-1)^{p_j}(iY)^{p_j\oplus q_j}Z^{\overline{p_j \oplus q_j}}).
+\end{equation}
+Considering $XZ=-iY$, Eqn. (\ref{eqn:ExpandE}) can be modified into
+\begin{equation}
+    \begin{split}
+        E_{p,q}&=\frac{1}{2^n}\bigotimes_{j=0}^{n-1}(X^{p_j\oplus q_j}+(-1)^{q_j}X^{p_j\oplus q_j}Z) \\
+        &=\frac{1}{2^n}\bigotimes_{j=0}^{n-1}\sum_{s_j=0,1}(-1)^{q_j\wedge s_j}X^{p_j\oplus q_j}Z^{s_j}\\
+        &=\frac{1}{2^n}\prod_{j=0}^{n-1}\sum_{s_j=0,1}(-1)^{q_j\wedge s_j}X_j^{p_j\oplus q_j}Z_j^{s_j},
+    \end{split}
+    \label{eqn:DecompositionOfE}
+\end{equation}
+with 
+\begin{equation}
+    X_j\coloneqq I^{\otimes j}\otimes X\otimes I^{\otimes(n-j-1)}, \quad Z_j\coloneqq I^{\otimes j}\otimes Z\otimes I^{\otimes(n-j-1)}\quad (j\in[n-1]_0).
+    \label{eqn:XandZ}
+\end{equation}
+The last step of Eqn. (\ref{eqn:DecompositionOfE}) makes sense because the operator $(-1)^{q_j\wedge s_j}X^{p_j\oplus q_j}Z^{s_j}$ only exert on the $j^{th}$ qubit, and with the definition from Eqn. (\ref{eqn:XandZ}) the last expression in Eqn. (\ref{eqn:DecompositionOfE}) will do the same job. Switching the sequence of the summation and production, the last expression can be written as
+\begin{equation}
+    E_{p,q}=\frac{1}{2^n}\left(\sum_{s_0=0,1}\cdots\sum_{s_{n-1}=0,1}\right)\prod_{j=0}^{n-1}(-1)^{q_j\wedge s_j}X^{p_j\oplus q_j}Z^{s_j}
+    \label{eqn:Epq3}
+\end{equation}
+By transforming the $E_{p,q}$ into the form above, we can recognize immediately the series summation within the round brackets are actually the summation over all the possible combination of binary number generated from the integer $n$. Use $n=3$ as an example again, those summations will run through $000_2$ all the way to $111_2$, which means all the 8 possible combinations. Therefore, all the binary summation can be replaced by summation over integers, which is
+\begin{equation}
+    E_{p,q}=\frac{1}{2^n}\sum_{s=0}^{2^n-1}\prod_{j=0}^{n-1}(-1)^{q_j\wedge s_j}X^{p_j\oplus q_j}Z^{s_j}.
+    \label{eqn:Epq4}
+\end{equation}
+Notice that the tensor product of Hadamard matrices
+\begin{equation}
+    H_{q_j,s_j}=(-1)^{q_j\wedge s_j} \quad (q_j, s_j\in\{0,1\})
+\end{equation}
+is
+\begin{equation}
+    (H^{\otimes n})_{q,s}=\prod_{j=0}^{n-1}(-1)^{q_j\wedge s_j} \quad (q,s\in[2^n-1]_0),
+\end{equation}
+Eqn. (\ref{eqn:Epq4}) can be further modified into
+\begin{equation}
+    E_{p,q}=\frac{1}{2^n}\sum_{s=0}^{2^n-1}(H^{\otimes n})_{q,s}\prod_{j=0}^{n-1}X^{p_j\oplus q_j}Z^{s_j}.
+    \label{eqn:Epq5}
+\end{equation}
+With the help of the equation above, the decomposition of $A$ into a sum of elementary matrices can be expressed as
+\begin{equation}
+    A=\frac{1}{2^n}\sum_{p,q,s=0}^{2^n-1}a_{p,q}(H^{\otimes n})_{q,s}\prod_{j=0}^{n-1}X^{p_j\oplus q_j}Z^{s_j}.
+    \label{eqn:DecomposeA1}
+\end{equation}
+By introducing a new summation index $r\coloneqq p\oplus q$, Eqn. (\ref{eqn:DecomposeA1}) can be rewritten as
+\begin{equation}
+    \begin{split}
+        A&=\frac{1}{2^n}\sum_{r,s=0}^{2^n-1}\sum_{q=0}^{2^n-1}a_{q\oplus r,q}(H^{\otimes n})_{q,s}\prod_{j=0}^{n-1}X^{p_j\oplus q_j}Z^{s_j}\\
+        &=\sum_{r,s=0}^{2^n-1}\left(\frac{i^{-|r\wedge s|}}{2^n}\sum_{q=0}^{2^n-1}a_{q\oplus r,q}(H^{\otimes n})_{q,s}\right)\left(i^{|r\wedge s|}\prod_{j=0}^{n-1}X^{p_j\oplus q_j}Z^{s_j}\right)
+    \end{split}
+\end{equation}
+
+\subsubsection{Equation 24}
+Now, let's turn our attention to Eqn. (24) in \cite{feniou2025realspacechemistryquantumcomputers}, which looks like
+\begin{equation}
+\omega_{mn}=\frac{1}{N}\sum_{x=0}^{N-1}(-1)^{x\odot n}\bar{\textbf{T}}_{m\oplus x,x}.
+\label{Eqn:24}
+\end{equation}
+ In the following paragraphs, we will prove this expression is a Walsh-Hadamard transformation between $\omega_{mn}$ and $\bar{\textbf{T}}_{xy}$, which can be written in the matrix form as:
+\begin{equation}
+    \omega=\mathbb{H}\bar{\text{T}}\mathbb{H},
+    \label{Eqn:Two-sidedWHT}
+\end{equation}
+where $\mathbb{H}$ denotes Hadamard matrix. We start from the simplest 1D Walsh-Hadamard transformation by definding a function $f$ on $\{0,1\}^k$ such that 
+\begin{equation}
+    f(x):\{0,1\}^k\rightarrow C, \quad x=(x_0, ..., x_{k-1}).
+\end{equation}
+And the \textit{bitwise dot product} is defined as
+\begin{equation}
+    x\odot n\equiv\sum_{b=0}^{k-1}x_bn_b \, (\text{mod}\, 2),
+    \label{Eqn:bitwiseDotProduct}
+\end{equation}
+which contains three procedures: \textbf{1}. multiplying every binary digits $x_bn_b$; \textbf{2}. summing up the products; \textbf{3}. performing mod 2, keeping its parity as the final result. So, the result of Eqn. (\ref{Eqn:bitwiseDotProduct}) is always binary. Such a binary result reflects the phase of Pauli Z.
+
+Based on the preceding definitions, the Walsh-Hadamard transformation (WHT) is defined as
+\begin{equation}
+    \hat{f}(n)=\frac{1}{2^{k/2}}\sum_{x\in\{0,1\}^k}(-1)^{x\odot n}f(x).
+    \label{Eqn:WHT}
+\end{equation}
+Its corresponding matrix form is 
+\begin{equation}
+    \hat{f}=\mathbb{H}f,
+\end{equation}
+where $\mathbb{H}\in C^{2^k\times2^k}$ is the normalized Hadamard matrix, whose $(n,x)$ entry is 
+\begin{equation}
+    \mathbb{H}_{nx}=\frac{1}{2^{k/2}}(-1)^{x\odot n}. 
+    \label{Eqn:Hadamard_entry}
+\end{equation}
+From Eqn.~(\ref{Eqn:WHT}), we should recongnize WHT is in essence the Fourier transformation on the Boolean domain $\{0,1\}^k$, with the new transformation kernel $(-1)^{x\odot n}$ rather than the regular kernel like $e^{-ikx}$ in the complex domain. For this reason, it will be convenient for us to define \textit{Hadamard convolution} (XOR convolution) on the Boolean domain as 
+\begin{equation}
+    (f*_{\oplus}g)(x)=\sum_{y}f(y)g(x\oplus y),
+    \label{Eqn:XORconvolution}
+\end{equation}
+which is parallel of the regular convolution $(f*g)(x)=\sum_{y}f(y)g(x-y)$ in the regular space.
+From Eqn.~(\ref{Eqn:XORconvolution}), after  performing WHT on it, we obtain
+\begin{equation}
+    \widehat{f*_{\oplus}g}(n)=\hat{f}(n)\hat{g}(n)
+    \label{Eqn:WHTconvolution}
+\end{equation}
+Now, let's consider a matrix
+\begin{equation}
+    \bar{\textbf{T}}:\{0,1\}^k\times\{0,1\}^k\rightarrow C, \quad \bar{\textbf{T}}_{ab},
+\end{equation}
+where $a,b\in\{0,1\}^k$ are the binary indices. By now we can see Eqn.~(\ref{Eqn:Two-sidedWHT}) is actually a two-sided WHT on $\bar{\textbf{T}}$. Substituting Eqn.~(\ref{Eqn:Hadamard_entry}) into Eqn.~(\ref{Eqn:Two-sidedWHT}), we can figure out its components form, which is
+\begin{equation} 
+    \begin{split}
+        \omega_{mn}&=\sum_{a,b\in\{0,1\}^k}\mathbb{H}_{ma}\bar{\textbf{T}}_{ab}\mathbb{H}_{bn} \\
+        &=\frac{1}{2^k}\sum_{a,b}(-1)^{a\odot m}\bar{\textbf{T}}_{ab}(-1)^{b\odot n}.
+    \end{split}
+    \label{Eqn:ComponentFormofTwo-sidedWHT}
+\end{equation}
+Let $x\coloneqq b$ and $a\coloneqq m\oplus x$, since $(a,b)\mapsto (m\oplus x,x) $ is a bijection on $\{0,1\}^k$, the summation in Eqn.~(\ref{Eqn:ComponentFormofTwo-sidedWHT}) can be rewritten as
+\begin{equation}
+    \omega_{mn}=\frac{1}{2^k}\sum_{x\in\{0,1\}^k}(-1)^{(m\oplus x)\odot m}\bar{\textbf{T}}_{m\oplus x,x}(-1)^{x\odot n}.
+\end{equation}
+Considering $(m\oplus x)\odot m=m\odot m+x\odot m\equiv x\odot m\quad(\text{mod}\,2)$ and $m\odot m$ is a constant independent of $x$, which will only lead to a fixed phase $(-1)^{m\odot m}$ that can be absorbed into $\mathbb{H}$, the equation above is equivalent to Eqn.~(\ref{Eqn:24}).
+
+\subsection{Quantum Chebyshev Phase Estimation}
+Since the transcorrelated Hamiltonian matrix is non-Hermitian, it is no longer feasible to find its eigenvalues with a quantum algorithm by usual Quantum Phase Estimation (QPE). Therefore, a new method called Qunatum EigenValue Estimation (QEVE) \cite{inproceedings} is needed. In this algorithm, given a $v$ qubit register, a state $\ket{\psi}\in \mathbb{C}^{N^\eta}$ that is prepared close to the ground state of $\tilde{\textbf{H}}$. Becasue no one can guarantee that $\tilde{\textbf{H}}$ is unitary, which means we are not sure whether it can be handled by qubits, we embed the $\tilde{\textbf{H}}$ into a larger unitary matrix $U$ like
+\begin{equation}
+    U=
+    \begin{bmatrix}
+        \frac{\tilde{\textbf{H}}}{\alpha_{\tilde{H}}} & \cdot \\
+        \cdot & *
+    \end{bmatrix},
+    \label{eqn:blockEncoding}
+\end{equation}
+where $\alpha_{\tilde{\textbf{H}}}$ is called subnormalization constant, which is defined by $\alpha_{\tilde{\mathbf{H}}} \geq \| \tilde{H} \|_2$, indicating the maximum of the L2 norm of $\tilde{\textbf{H}}$. To convince ourselves that we can always construct a unitary matrix out of random given matrix $A$, we can build up a matrix like
+\begin{equation}
+    U^{\prime}=
+    \begin{bmatrix}
+        A/\alpha & \sqrt{I-A^{\dagger}A/\alpha^2} \\
+        \sqrt{I-A^{\dagger}A/\alpha^2} & -A^{\dagger}/\alpha
+    \end{bmatrix}.
+\end{equation}
+It is easy to verify that the $U^{\prime}$ is unitary no matter whether $A$ is Hermitian or reversible or sparse, or its shape.
+
+Now, suppose we have $a$ ancilla register, from the requirement 
+\begin{equation}
+    \bra{0^a}U\ket{0^a}=\frac{\tilde{\textbf{H}}}{\alpha_{\tilde{H}}},
+\end{equation}
+we can see the information contained in $\tilde{\textbf{H}}$ is now embedded in the bigger unitary matrix $U$, and this information can be extracted. So, in terms of information, $U$ and $\tilde{\textbf{H}}$ are equivalent. For our convenience, in the following discussion we use $\tilde{\textbf{H}}$ only, but keep in mind, if you see the operator like $T_k(\frac{\tilde{\textbf{H}}}{\alpha})$, it is realized via $U$. 
+
+Since we are now having a unitary matrix (operator) to play with, we can construct a state like
+\begin{equation}
+    \sum_{\ell=0}^{v-1}\ket{\ell}e^{2\pi i\ell \frac{\tilde{\textbf{H}}}{\alpha_{\tilde{H}}}}\ket{\psi}.
+    \label{eqn:phaseKickBack}
+\end{equation}
+In this equation, $\ket{\psi}$, which has already been meantioned before, is constructed by an oracle formed by the $v$ register, via $O_{\psi}\ket{0}=\ket{\psi}$. Hopefully, the state we construced via $O_{\psi}$ is close enough to the real eigenstate $\ket{\psi_0}$ of the system. Ideally, when $\ket{\psi}=\ket{\psi_0}$, it is easy to see, the eigenvalue, which is our ultimate aim, is now embedded in the phase of the exponential function on the left of $\ket{\psi}$ in Eqn. \ref{eqn:phaseKickBack}. This idea is called phase kick-back, and it can be described mathematically, on the condition that $\tilde{H}\ket{\psi}=\lambda\ket{\psi}$,  as
+\begin{equation}
+    \sum_{\ell=0}^{v-1}\ket{\ell}e^{2\pi i\ell \frac{\tilde{\textbf{H}}}{\alpha_{\tilde{H}}}}\ket{\psi}=\sum_{\ell=0}^{v-1}\ket{\ell}e^{2\pi i\ell \frac{\lambda}{\alpha_{\tilde{H}}}}\ket{\psi}=\sum_{\ell=0}^{v-1}e^{2\pi i\ell \frac{\lambda}{\alpha_{\tilde{H}}}}\ket{\ell}\otimes\ket{\psi}.
+    \label{eqn:phaseKickBack2}
+\end{equation}
+The $\lambda$ contained in the phase can be measured via a QFT on the $O_{\psi}$. 
+
+However, as indicated by \cite{shao2020eigenvalue}, if we define $\epsilon\in(0,1)$ as the error tolerance, algorithm based on Eqn. \ref{eqn:phaseKickBack} suffers from a suboptimal $\mathcal{O}(\epsilon^{-1}\cdot\text{polylog}(\epsilon^{-1}))$ query complexity. To address this problem, an alternative QEVE based on \textit{Chebyshev history states} was proposed, obtaining the $\mathcal{O}(1/\epsilon)$ of QPE. To understand the \textit{Quantum Chebyshev Phase Estimation} (QCPE) algorithm, we need to explain what the Chebyshev polynomialis  and its relevant properties. By doing so, we will know why we apply this particular polynomial in QCPE. 
+
+\subsubsection{Chebyshev Polynomials of the First and Second Kinds}
+The $\ell$th Chebyshev polynomial of the first kind $T_{\ell}:[-1;1]\rightarrow[-1;1]$ is defined as:
+\begin{equation}
+    T_{\ell}(x)=\cos(\ell \arccos(x)).
+    \label{eqn:FirstCheby}
+\end{equation}
+This trignometrical structure implies its compatibility of QFT, that is one of the reasons Chebyshev polynomial is chosen. Meanwhile, we notice that Chebyshev polynomial is a mapping from interval [-1;1] to [-1;1], that is reason when we constructed the block encoding (see Eqn. (\ref{eqn:blockEncoding})), $\tilde{H}$ is divided by the maximum norm $\alpha_{\tilde{H}}$. Later, to generate the \textit{Chebyshev history state}, the following generating function
+\begin{equation}
+    \sum_{\ell=0}^{\infty}T_{\ell}(x)y^{\ell}=\frac{1-yx}{1+y^2-2yx}
+    \label{eqn:FirstGeneratingFunction}
+\end{equation}
+is used \cite{inproceedings} after it is rescaled into
+\begin{equation}
+    \tilde{T}_{\ell}(x)= 
+    \begin{cases}
+        \frac{1}{2}T_0(x) & \text{if } \quad \ell=0 \\
+        T_{\ell}(x) & \text{if } \quad \ell > 0
+    \end{cases},
+\end{equation}
+with new generating function
+\begin{equation}
+    \sum_{\ell=0}^\infty\tilde{T}_{\ell}y^{\ell}=\frac{1-y^2}{2(1+y^2-2yx)}.
+    \label{eqn:GenerationScaledCheby}
+\end{equation}
+Besides the first kind Chebyshev polynomial, we also have the second form, which is defined as:
+\begin{equation}
+    U_{\ell}(x)=\frac{\sin((\ell+1)\arccos(x))}{\sin{\arccos(x)}}
+\end{equation}
+with generating function
+\begin{equation}
+    \sum_{\ell=0}^{\infty}U_{\ell}(x)y^{\ell}=\frac{1}{1+y^2-2yx}.
+\end{equation}
+For more detailed description, please refer to Appendix~\ref{subsec:Cheby}.
+
+\subsubsection{Chebyshev History State}
+With the definition of Chebyshev polynomial, we use 
+\begin{equation}
+    \sum_{\ell=0}^{v-1}\ket{\ell}\otimes T_{\ell}\left(\frac{\tilde{\textbf{H}}}{\alpha_{\tilde{H}}}\right)\ket{\psi}
+    \label{eqn:ChebHis}
+\end{equation}
+to take the place of Eqn.~\ref{eqn:phaseKickBack}. The total systems are said to form a \textit{Chebyshev history state} of $\tilde{\textbf{H}}$ once Eqn.~\ref{eqn:ChebHis} is fulfilled. The reason we call it \textit{history state} is that the $v$ qubits register $\ket{\ell}$ serves as a counter that indicates the order of the Chebyshev polynomial of $\tilde{\textbf{H}}/\alpha_{\tilde{H}}$ applied on the state $\ket{\psi}$ in the sum. Follow the same idea we obtain Eqn. (\ref{eqn:phaseKickBack2}), we find the phase $\phi=\frac{1}{2\pi}\arccos\frac{\lambda}{\alpha_{\tilde{H}}}$ is kicked back and end up with 
+\begin{equation}
+    \sum_{\ell=0}^{v-1}\cos(2\pi \ell\phi)\ket{\ell}\otimes\ket{\psi}.
+    \label{eqn:phaseKickBack3}
+\end{equation}
+If we only concentrate on the cosine part together with $\ket{\ell}$ for now, after performing the QFT, we get 
+\begin{equation}
+    \text{QFT}\sum_{\ell=0}^{v-1}\cos(2\pi\ell\phi)\ket{\ell}=\frac{1}{2\sqrt{v}}\sum_{\ell=0}^{v-1}\sum_{\ell^{\prime}=0}^{v-1}\left(e^{2\pi i\ell^{\prime}(\phi-\frac{\ell}{v})}+e^{-2\pi i\ell^{\prime}(\phi+\frac{\ell}{v})}\right).
+\end{equation}
+According to \cite{inproceedings}, on the condition that the scale $\alpha_{\tilde{H}}>2\|\tilde{\textbf{H}}\|$ is applied,  by measuring $\ell$ in the computational basis, we obtain an approximation of $v\phi$ with a success probability greater than 1/2, which means the desired quantum state dominates, and we can boost its probability to near 1 with repeated applications. The success probability can then be boosted to at least $1-p_f$ by repeating the procedure $\mathcal{O}(\log(1/p_f))$ times.
+
+In order to introduce the matrix form of Chebyshev history state, let us define and study a $v\times v$ \textit{lower shift operator}
+\begin{equation}
+    L=\sum_{k=0}^{n-2}\ket{k+1}\bra{k}.
+    \label{eqn:LowerShift}
+\end{equation}
+From the following example, we can see why we call it lower shift operator and one important property.
+\begin{example}
+    Let us construct $L_4$, a $4\times4$ lower shift matrix:
+    \begin{equation}
+        \begin{split}
+            L_4&=\begin{bmatrix}
+            0&0&0&0\\
+            1&0&0&0\\
+            0&1&0&0\\
+            0&0&1&0
+        \end{bmatrix} \\
+        &=\begin{bmatrix}
+            0\\1\\0\\0
+        \end{bmatrix}
+        \begin{bmatrix}
+            1&0&0&0
+        \end{bmatrix}+
+        \begin{bmatrix}
+            0\\0\\1\\0
+        \end{bmatrix}
+        \begin{bmatrix}
+            0&1&0&0
+        \end{bmatrix} +
+        \begin{bmatrix}
+            0\\0\\0\\1
+        \end{bmatrix}
+        \begin{bmatrix}
+            0&0&1&0
+        \end{bmatrix}
+        \end{split}       
+    \end{equation}
+    and we also have
+    \begin{equation}
+        L_4\ket{2}=\begin{bmatrix}
+            0&0&0&0\\
+            1&0&0&0\\
+            0&1&0&0\\
+            0&0&1&0
+        \end{bmatrix}
+        \begin{bmatrix}
+            0\\0\\1\\0
+        \end{bmatrix}
+        =\begin{bmatrix}
+            0\\0\\0\\1
+        \end{bmatrix}=\ket{3},
+        \label{eqn:LowerMatrix1}
+    \end{equation}
+    as well as \begin{equation}
+        L_4\ket{3}=\vec{0}.
+        \label{eqn:LowerMatrix2}
+    \end{equation}
+    Eqn. (\ref{eqn:LowerMatrix1}) shows us that $L_v\ket{k+1}=\ket{k}$, hence the name \textbf{lower shift}. Eqn. (\ref{eqn:LowerMatrix2}) tells us there is a truncation in the series of operations.
+\end{example}
+With the help of the lower shift operator $\textbf{L}_v^{\ell}=\sum_{\ell^{\prime}=0}^{v-1-\ell}\ket{\ell+\ell^{\prime}}\bra{\ell^{\prime}}$, we can construct the matrix version of the operator of the generating function for rescaled Chebyshev polynomials 
+\begin{equation}
+    G\left(\frac{\tilde{\textbf{H}}}{\alpha_{\tilde{H}}}\right)=\sum_{\ell=0}^{v-1}\textbf{L}_v^{\ell}\otimes\tilde{T}_{\ell}\left(\frac{\tilde{\textbf{H}}}{\alpha_{\tilde{H}}}\right)
+    \label{eqn:GeneratingFunction}
+\end{equation}
+applied on the $\ket{0}\otimes\ket{\psi}$ state gives the rescaled Chebyshev history state
+\begin{equation}
+    \sum_{\ell=1}^{v-1}\ket{\ell}\otimes\tilde{T}_{\ell}\left(\frac{\tilde{\textbf{H}}}{\alpha_{\tilde{H}}}\right)\ket{\psi}.
+\end{equation}
+If Eqn. (\ref{eqn:GeneratingFunction}) is applied onto the zeroed $v$ qubit register, we can see its complete Chebyshev history state:
+\begin{equation}
+    \sum_{\ell=0}^{v-1}\textbf{L}_v^{\ell}\otimes\tilde{T}_{\ell}\left(\frac{\tilde{\textbf{H}}}{\alpha_{\tilde{H}}}\right) =\sum_{\ell=0}^{\infty}\textbf{L}_v^{\ell}\otimes\tilde{T}_{\ell}\left(\frac{\tilde{\textbf{H}}}{\alpha_{\tilde{H}}}\right) 
+    =\frac{\textbf{I}_v\otimes\textbf{I}-\textbf{L}_v^{2}\otimes\textbf{I}}{2Pad\left(\frac{\tilde{\textbf{H}}}{\alpha_{\tilde{H}}}\right)},
+\end{equation}
+where $Pad\left(\frac{\tilde{\textbf{H}}}{\alpha_{\tilde{H}}}\right)$ is defined as 
+\begin{equation}
+    \begin{split}
+        Pad\left(\frac{\tilde{\textbf{H}}}{\alpha_{\tilde{H}}}\right) 
+        &=\textbf{I}_v\otimes\textbf{I}+\textbf{L}_v^{2}\otimes\textbf{I}-2\textbf{L}\otimes\frac{\tilde{\textbf{H}}}{\alpha_{\tilde{H}}} \\
+        &=\begin{bmatrix}
+            \textbf{I}&0&\cdots&\cdots&\cdots&0\\
+            -2\tilde{\textbf{H}}/\alpha_{\tilde{H}} & \textbf{I} & \ddots &\ddots &\ddots& \vdots \\
+            \textbf{I}&-2\tilde{\textbf{H}}/\alpha_{\tilde{H}}&\textbf{I} &\ddots &\ddots &\vdots \\
+            0& \textbf{I}& -2\tilde{\textbf{H}}/\alpha_{\tilde{H}} &\textbf{I} &\ddots &\vdots \\
+            \vdots &\ddots &\ddots &\ddots &\ddots &\vdots \\
+            0& \cdots &0 &\textbf{I} & -2\tilde{\textbf{H}}/\alpha_{\tilde{H}} &\textbf{I}
+        \end{bmatrix}
+    \end{split} 
+    \label{eqn:PaddingMatrix}  
+\end{equation}
+
+\subsubsection{Brief summary of this algorithm}
+The following content is from \cite{feniou2025realspacechemistryquantumcomputers}.
+\begin{enumerate}
+    \item Construct a block encoding of the target matrix $\tilde{\textbf{H}}$ and the lower shift matrix $\tilde{\textbf{L}}_v$.
+    \item Use $\textbf{L}_v$ and $\tilde{\textbf{H}}$ to form the $Pad\left(\frac{\tilde{\textbf{H}}}{\alpha_{\tilde{H}}}\right)$ gate according to Eqn. (\ref{eqn:PaddingMatrix}).
+    \item Prepare the $v$ qubit register in the state $\frac{\ket{0}-\ket{2}}{2}$.
+    \item Invoke the quantum linear system solver the equation 
+    \begin{equation}
+        Pad\left(\frac{\tilde{\textbf{H}}}{\alpha_{\tilde{H}}}\right)\ket{\Phi}\otimes\ket{\psi}=\frac{\ket{0}-\ket{2}}{2}\otimes\ket{\psi}
+    \end{equation}
+    \item Perform the QFT and measure in the computational basis.
+    \item Boost the success probability using median amplification.
+\end{enumerate}
+% \begin{equation}
+%     \nabla_1\psi=\hat{\textbf{r}}_1\frac{\partial\psi}{\partial r_1}+\hat{\textbf{r}}_{12}\frac{\partial\psi}{\partial r_{12}}\\
+%     \nabla_2\psi=\hat{\textbf{r}}_2\frac{\partial\psi}{\partial r_2}+\hat{\textbf{r}}_{12}\frac{\partial\psi}{\partial r_{12}}
+% \end{equation}
+% \begin{equation}
+%     \nabla\cdot(\hat{r}f(r))=\frac{2}{r}f(r)+\frac{\partial f}{\partial r}
+% \end{equation}
+        
+\subsection{Transcorrelated Molecular Hamiltonian}
+This subsection is dedicated to the interpretation of the Eqns. (31, 32, 33) in \cite{feniou2025realspacechemistryquantumcomputers}, which look like
+\begin{equation}
+    \begin{split}
+        \tilde{H}=\hat{H}&-\sum_{i,\alpha}\tilde{\mathcal{K}}[g_{\mu_{ne}}](\mathbf{x}_i,\mathbf{R}_{\alpha})-\sum_{i,\alpha<\beta}\mathcal{\tilde{B}}[g_{\mu_{ne}}(\mathbf{x}_i,\mathbf{R}_{\alpha},\mathbf{R}_{\beta})]\\
+        &-\sum_{i<j}\tilde{\mathcal{K}}[h_{\mu_{ee}}](\mathbf{x}_i,\mathbf{x}_j)-\sum_{i<j<k}\tilde{\mathcal{B}}[h_{\mu_{ee}}](\mathbf{x}_i,\mathbf{x}_j,\mathbf{x}_k)
+    \end{split}
+    \label{eqn:31}    
+\end{equation}
+with
+\begin{equation}
+    \begin{split}
+        \tilde{\mathcal{K}}[h_{\mu_{ee}}](\mathbf{x}_i,\mathbf{x}_j)&=\frac{1}{2}\left[\nabla_i^2h+\nabla_j^2h+(\nabla_i h)^2+(\nabla_j h)^2\right]\\
+        &+\nabla_i h\cdot\nabla_i+\nabla_jh\cdot\nabla_j
+    \end{split}
+    \label{eqn:32}
+\end{equation}
+and
+\begin{equation}
+    \begin{split}
+        \tilde{\mathcal{B}}[h_{\mu_{ee}}](\mathbf{x}_i,\mathbf{x}_j,\mathbf{x}_k)&=\nabla_ih_{ij}\cdot\nabla_ih_{ik}+\nabla_j h_{ji}\cdot\nabla_j h_{jk}\\
+        &+\nabla_k h_{ki}\cdot\nabla_k h_{kj},
+    \end{split}
+    \label{eqn:33}
+\end{equation}
+where $h\equiv h_{\mu_{ee}}$, $h_{ij}=h(\mathbf{x}_i,\mathbf{x}_j)$ and $\nabla_i\equiv\nabla_{\mathbf{x}_i}$.
+
+In Eqn.~(\ref{eqn:31}), the $\tilde{H}$ is called the transcorrelated (TC) Hamiltonian of $\hat{H}$. Suppose $\hat{H}$ has an eigenvalue equation $\hat{H}\Psi=E\Psi$. Now, let
+\begin{equation}
+    \Psi=e^{\tau}\Phi,
+\end{equation}
+The eigenvalue equation is turned into $\hat{H}e^{\tau}\Phi=Ee^{\tau}\Phi$ and can be further transformed into $e^{-\tau}\hat{H}e^{\tau}=E\Phi$, where we can find the definition of $\tilde{H}$ and the fact that $\tilde{H}$ has the same spectrum of $\hat{H}$.
+ Based on the Eqn. (29), which is Eqn.~(\ref{eqn:TranscorrelatedHamiltonian}) in this note, the Hamiltonian
+\begin{equation}
+    \hat{H}=\sum_{i=0}^{\eta-1}\left(-\frac{1}{2}\nabla_{\textbf{x}_i}^2-\sum_{\alpha=0}^{M-1}\frac{\mathcal{Z}_{\alpha}}{|\textbf{x}_i-\textbf{R}_{\alpha}|}+\sum_{j>i}^{\eta-1}\frac{1}{|\textbf{x}_i-\textbf{x}_j|}\right)
+    \label{eqn:HamiltonianBeforeDescritization}
+\end{equation}
+with a symmetrical function of the $\eta$-electron coordinates defined as
+\begin{equation}
+    \tau({\textbf{x}_i})=\sum_{i=0}^{\eta-1}\left(\sum_{\alpha=0}^{M-1}g_{\mu_{ne}}(x_{i\alpha})+\sum_{j>i}^{\eta-1}h_{\mu_{ee}}(x_{ij})\right)
+    \label{eqn:TranscorrelatedHamiltonian}
+\end{equation}
+will be converted into TC Hamiltonian so that the TC eigenfunctions are free of cusps. In Eqn.~(\ref{eqn:TranscorrelatedHamiltonian}), $g_{\mu_{ne}}$ and $h_{\mu_{ee}}$ are functions of the electron-nuclei and electron-electron distances $x_{i\alpha}=| \textbf{x}_i-\textbf{R}_{\alpha} |$ and $x_{ij}=| \textbf{x}_i-\textbf{x}_j|$. \textit{Comments: Although Eqn.~(\ref{eqn:TranscorrelatedHamiltonian}) is a direct copy of Eqn. (30) from \cite{feniou2025realspacechemistryquantumcomputers}, I don't think it is a well written expression. The reason is on the right side of this equation, the dummy variable ``$i$'' has been summed, so it should not appear as a footnote on the left side of equation.} 
+\subsubsection{My wasted effort}
+With Eqn.~(\ref{eqn:HamiltonianBeforeDescritization}, \ref{eqn:TranscorrelatedHamiltonian}), we can now analyze $[\hat{H},\tau]$. We immediately notice from Eqn.~(\ref{eqn:HamiltonianBeforeDescritization}) that $\hat{H}$ is composed of the kinematic energy term which is a second-order derivative, and the potential terms which are only functions. Therefore,
+\begin{equation}
+    [\hat{H}, \tau]\rightarrow -\frac{1}{2}\nabla_{\textbf{x}_i}^2\tau+\tau\frac{1}{2}\nabla_{\textbf{x}_i}^2,
+    \label{eqn:equivalentCommutator}
+\end{equation}
+since scalar functions are commutative with each other. To figure out the $\nabla_{\textbf{x}_i}^2\tau$, let's temporarily study a simplified system of two nucleis and three electrons so that we can get rid of the complexity caused by the nested summation.  The three electrons can be labelled by 0, 1 and 2, and the two nucleis can be labelled by $\alpha$ and $\beta$, respectively. Based on these assumptions, we have
+\begin{equation}
+    \begin{split}
+        &(\nabla_{\textbf{x}_0}^2+\nabla_{\textbf{x}_1}^2+\nabla_{\textbf{x}_2}^2)\tau \\
+        &=\nabla_{\textbf{x}_0}^2g_{\mu_{ne}}(x_{0\alpha})+\nabla_{\textbf{x}_0}^2g_{\mu_{ne}}(x_{0\beta})+\nabla_{\textbf{x}_0}^2h_{\mu_{ee}}(x_{01})+\nabla_{\textbf{x}_0}^2h_{\mu_{ee}}(x_{02}) \\
+        &\quad+\nabla_{\textbf{x}_1}^2g_{\mu_{ne}}(x_{1\alpha})+\nabla_{\textbf{x}_1}^2g_{\mu_{ne}}(x_{1\beta})+\nabla_{\textbf{x}_1}^2h_{\mu_{ee}}(x_{01})+\nabla_{\textbf{x}_1}^2h_{\mu_{ee}}(x_{12}) \\
+        &\quad+\nabla_{\textbf{x}_2}^2g_{\mu_{ne}}(x_{2\alpha})+\nabla_{\textbf{x}_2}^2g_{\mu_{ne}}(x_{2\beta})+\nabla_{\textbf{x}_2}^2h_{\mu_{ee}}(x_{02})+\nabla_{\textbf{x}_2}^2h_{\mu_{ee}}(x_{12}).
+    \end{split}
+    \label{eqn:CheckLaplasianTau}
+\end{equation}
+Therefore, we need to evaluate the terms on the right side of Eqn.~(\ref{eqn:CheckLaplasianTau}) one by one. Take the first one as an example, in Cartesian coordinates, the $\nabla_{\textbf{x}_0}^2g_{\mu_{ne}}(x_{0\alpha})$ can be expanded into
+\begin{equation}
+    \nabla_{\mathbf{x}_0}^2g_{\mu_{ne}}(x_{0\alpha})=(\nabla_{x_0}^2+\nabla_{y_0}^2+\nabla_{z_0}^2)g_{\mu_{ne}}(x_{0\alpha}).
+\end{equation}
+To address this problem, strategy used in Appendix~(\ref{subsec:Laplacian}) will be applied here. For $\nabla_{x_0}^2g_{\mu_{ne}}(x_{0\alpha})$, we have
+\begin{equation}
+    \nabla_{x_0}^2g_{\mu_{ne}}(x_{0\alpha})=\frac{\text{d}^2}{\text{d}{x_0}^2}g_{\mu_{ne}}(x_{0\alpha}).
+\end{equation}
+Considering $x_{0\alpha}=\sqrt{(x_0-x_{\alpha})^2+(y_0-y_{\alpha})^2+(z_0-z_{\alpha})}$, the expression above can be written into 
+\begin{equation}
+    \frac{\text{d}^2}{\text{d}{x_0}^2}g_{\mu_{ne}}(x_{0\alpha})=\frac{\text{d}^2g_{\mu_{ne}}}{\text{d}x_{0\alpha}^2}\left(\frac{x_0-x_{\alpha}}{x_{0\alpha}}\right)^2+\frac{\text{d}g_{\mu_{ne}}(x_{0\alpha})}{\text{d}x_{0\alpha}}\frac{(y_0-y_{\alpha})^2_(z_0-z_{\alpha})^2}{x_{0\alpha}^3}.
+\end{equation}
+After we get the similar expression for second derivative over $y_{0\alpha}$ and $z_{0\alpha}$ respectively, we can sum them together to get
+\begin{equation}
+    \nabla_{\textbf{x}_0}^2g_{\mu_{ne}}(x_{0\alpha})=\frac{\text{d}^2g_{\mu_{ne}}(x_{0\alpha})}{\text{d}x_{0\alpha}^2}+\frac{2}{x_{0\alpha}}\frac{\text{d}g_{\mu_{ne}}(x_{0\alpha})}{\text{d}x_{0\alpha}}
+    \label{eqn:Secondgmune}
+\end{equation}
+Repeating the tedious thing on the rest of the terms in Eqn.~(\ref{eqn:CheckLaplasianTau}) and considering symmetry like $\nabla_{\mathbf{x}_1}h_{\mu_{ee}}(x_{01})=\nabla_{\mathbf{x}_0}h_{\mu_{ee}}(x_{01})$, we can find
+\begin{equation}
+    \begin{split}
+        (\nabla_{\textbf{x}_0}^2+\nabla_{\textbf{x}_1}^2+\nabla_{\textbf{x}_2}^2)\tau=&\sum_{i=0}^{2}\sum_{k=\alpha}^{\beta}\left(\frac{\text{d}^2}{\text{d}x_{ik}^2}g_{\mu_{ne}}(x_{ik})+\frac{2}{x_{ik}}\frac{\text{d}g_{\mu_{ne}}(x_{ik})}{\text{d}x_{ik}}\right)\\
+        &+2\sum_{i=0}^{2}\sum_{j>i}^{2}\left(\frac{\text{d}^2}{\text{d}x_{ij}^2}h_{\mu_{ee}}(x_{ij})+\frac{2}{x_{ij}}\frac{\text{d}h_{\mu_{ee}}(x_{ij})}{\text{d}x_{ij}}\right).
+    \end{split}    
+    \label{eqn:nablaTau}
+\end{equation}
+It is easy to see Eqn.~(\ref{eqn:nablaTau}) can be generalized by replacing the upper limit of those summations. Now, with the help of Eqn.~(\ref{eqn:nablaTau}), Eqn.~(\ref{eqn:equivalentCommutator}) for the commutator is no longer so abstract. Instead, its general computationable form can be written as:
+\begin{equation}
+    \begin{split}
+        [\hat{H}, \tau]=&-\frac{1}{2}\sum_{i=0}^{\eta-1}\sum_{k=0}^{M-1}\left(\frac{\text{d}^2}{\text{d}x_{ik}^2}g_{\mu_{ne}}(x_{ik})+\frac{2}{x_{ik}}\frac{\text{d}g_{\mu_{ne}}(x_{ik})}{\text{d}x_{ik}}\right)\\
+        &-\sum_{i=0}^{\eta-1}\sum_{j>i}^{\eta-1}\left(\frac{\text{d}^2}{\text{d}x_{ij}^2}h_{\mu_{ee}}(x_{ij})+\frac{2}{x_{ij}}\frac{\text{d}h_{\mu_{ee}}(x_{ij})}{\text{d}x_{ij}}\right) \\
+        &+\frac{1}{2}\sum_{i=0}^{\eta-1}\left(\sum_{\alpha=0}^{M-1}g_{\mu_{ne}}(x_{i\alpha})+\sum_{j>i}^{\eta-1}h_{\mu_{ee}}(x_{ij})\right)\sum_{i^{\prime}}^{\eta-1}\nabla_{\textbf{x}_{i^{\prime}}}^2.
+    \end{split}
+    \label{eqn:tangibleCommutator}   
+\end{equation}
+Now, it is time to consider $\frac{1}{2}\left[[\hat{H},\tau],\tau\right]$. Once again, the first and the second row on the right side of Eqn.~(\ref{eqn:tangibleCommutator}) are ordinary functions which are commutative with $\tau$. Therefore, we have
+\begin{equation}
+    \begin{split}
+        \left[[\hat{H},\tau],\tau\right]\rightarrow&\frac{1}{2}\sum_{i=0}^{\eta-1}\left(\sum_{\alpha=0}^{M-1}g_{\mu_{ne}}(x_{i\alpha})+\sum_{j>i}^{\eta-1}h_{\mu_{ee}}(x_{ij})\right)\sum_{i^{\prime}=0}^{\eta-1}\nabla_{\textbf{x}_{i^{\prime}}}^2\tau\\
+        &-\frac{1}{2}\tau\sum_{i=0}^{\eta-1}\left(\sum_{\alpha=0}^{M-1}g_{\mu_{ne}}(x_{i\alpha})+\sum_{j>i}^{\eta-1}h_{\mu_{ee}}(x_{ij})\right)\sum_{i^{\prime}=0}^{\eta-1}\nabla_{\textbf{x}_{i^{\prime}}}^2
+    \end{split}   
+\end{equation}
+\subsubsection{Idea from Cohen's paper}
+The previoud efford is in deadend since it cannot recover the operator $\nabla_i h\cdot\nabla_j$. After I read Cohen's paper \cite{cohen2019SimilarityTransformation}, I realize where the problem is: I forgot about the operator property of $[\hat{H},\tau]$. It is an operator, so it will be used on some function, say $f$, which means we need to deal with 
+\begin{equation}
+    [\hat{H},\tau]f=\hat{H}(\tau f)-f\hat{H}\tau.
+    \label{eqn:OperatorProperty}
+\end{equation}
+Although, in the previous section, most of the effort is wasted, one of the analysis is correct: in $\hat{H}$, only the kinetic energy (second-derivative) operator do not commute with $\tau$, which agrees with \cite{cohen2019SimilarityTransformation}. In this paper, they also use this to explain why Eqn.~(\ref{eqn:TruncatSecondOrder}) is truncated to second order. Therefore, we need to focus on $\nabla_i^2(\tau f)$, which leads to
+\begin{equation}
+    \begin{split}
+        \nabla_i^2(\tau f)&=\nabla_i\cdot(\nabla_i(\tau f))=\nabla_i\cdot(f\nabla_i\tau+\tau\nabla_i f)\\
+        &=f\nabla_i^2\tau+2\nabla_i\tau\cdot\nabla_i f+\tau\nabla_i^2f
+    \end{split}    
+\end{equation}
+The first term in the last line in the equation above, $f\nabla_i^2\tau$, will be cancelled by $-f\hat{H}\tau$ in Eqn.~(\ref{eqn:OperatorProperty}). So, after this analysis, we can figure out what is left behind from Eqn.~(\ref{eqn:OperatorProperty}) is
+\begin{equation}
+    [\hat{H},\tau]\textunderscore=-\sum_i\left(\frac{1}{2}(\nabla_i^2\tau)\textunderscore+(\nabla_i\tau)\cdot\nabla_i\textunderscore\right).
+\end{equation}
+Here I temporarily use ``$\textunderscore$'' to take the place of the arbitrary function ``$f$'' on purpose  to emphasize, first the operator property of this commutator; second, in the furture calculation, function to be operated should be filled in here. In the upcoming equations this ``$\textunderscore$'' will not appear again, but I hope the reader can recognize there exist such an invisible phantom. 
+
+Since we are going to keep up to the second order, the term $(\nabla_i\tau)\cdot\nabla_i\textunderscore$ will survive in the next step in $\frac{1}{2}\left[[\hat{H},\tau],\tau\right]$, which eventually leads to
+\begin{equation}
+    \begin{split}
+        \tilde{H}&=\hat{H}-\sum_i\left(\frac{1}{2}\nabla_i^2\tau+(\nabla\tau)\cdot\nabla_i+\frac{1}{2}(\nabla_i\tau)^2\right)\\
+        &=\hat{H}-\sum_{i<j}\tilde{\mathcal{K}}(\mathbf{x}_i,\mathbf{x}_j)-\sum_{i<j<k}\tilde{\mathcal{B}}(\mathbf{x}_i,\mathbf{x}_j,\mathbf{x}_k),
+    \end{split}
+    \label{eqn:Hwith2&3bodies}
+\end{equation}
+where the two-body operator $\tilde{\mathcal{K}}$ and three-body operator $\tilde{\mathcal{B}}$ are defined as
+\begin{equation}
+    \begin{split}
+        \tilde{\mathcal{K}}(\mathbf{x}_i,\mathbf{x}_j)=&\frac{1}{2}\big(\nabla_i^2u(\mathbf{x}_i,\mathbf{x}_j)+\nabla_j^2u(\mathbf{x}_i,\mathbf{x}_j)+(\nabla_iu(\mathbf{x}_i,\mathbf{x}_j))^2 \\
+        &+(\nabla_ju(\mathbf{x}_i,\mathbf{x}_j))^2\big)+(\nabla_iu(\mathbf{x}_i,\mathbf{x}_j)\cdot\nabla_i)\\
+        &+(\nabla_ju(\mathbf{x}_i,\mathbf{x}_j)\cdot\nabla_j),
+    \end{split}
+    \label{eqn:two-bodyOperator}
+\end{equation}
+and
+\begin{equation}
+    \begin{split}
+        \tilde{\mathcal{B}}(\mathbf{x}_i,\mathbf{x}_j,\mathbf{x}_k)=&\nabla_iu(\mathbf{x}_i,\mathbf{x}_j)\cdot\nabla_iu(\mathbf{x}_i,\mathbf{x}_k)+\nabla_ju(\mathbf{x}_j,\mathbf{x}_i)\cdot\nabla_ju(\mathbf{x}_j,\mathbf{x}_k)\\
+        &+\nabla_ku(\mathbf{x}_k,\mathbf{x}_i)\cdot\nabla_ku(\mathbf{x}_k,\mathbf{x}_j).
+    \end{split}
+    \label{eqn:3bodyOperator}
+\end{equation}
+Eqns.~(\ref{eqn:two-bodyOperator}, \ref{eqn:3bodyOperator}) are equivalent to the equations (32, 33) (see Eqn.~(\ref{eqn:32}, \ref{eqn:33})) in \cite{feniou2025realspacechemistryquantumcomputers} with the symmetrical function $u(\mathbf{x}_i,\mathbf{x}_j)$ defined through $\tau=\sum_{i<j}u(\mathbf{x}_i,\mathbf{x}_j)$. By the word ``symmetrical'' we mean $u(\mathbf{x}_i,\mathbf{x}_j)=u(\mathbf{x}_j,\mathbf{x}_i)$.
+
+
+\subsubsection{Why Error Function is Used?}
+The preceeding subsection explained how we obtain the two-, three-body operators (see Eqns.~(\ref{eqn:two-bodyOperator}, \ref{eqn:3bodyOperator})) from the idea of transcorrelated Hamiltonian. However, there is still one question left to be answered. As we know, the transcorrelated Hamiltonian methods promises us to eleminate the Coulomb cusp from the operatros. But the fact is that we can still find $1/r_{ij}$ through $\hat{H}$ in Eqn.~(\ref{eqn:Hwith2&3bodies}). The ultimate salvation is in the appendix D of~\cite{giner2021transcorrelated}. However, the fundamental idea has already been pointed out at the bottom of page 2. The authour mentioned in the transformed Hamiltonian $\tilde{H}$, the leading order terms in  $1/r_{ij}$ is $\frac{1}{r_{ij}}+\tilde{W}[u]$, where
+\begin{equation}
+    \tilde{W}[u]=-\frac{2}{r_{12}}\frac{\partial u(r_{12})}{\partial r_{12}}
+\end{equation}
+is an operator in $\tilde{H}$ after the similarity transformation (see the first line in Eqn~(\ref{eqn:TruncatSecondOrder})). Follow the idea of range seperation density functional theory (RS-DFT)~\cite{RS-DFT_Pernal}, the author let
+\begin{equation}
+    \tilde{W}[u]+\frac{1}{r_{12}}=\frac{\operatorname{erf}(\mu r_{12})}{r_{12}},
+\end{equation}
+where the error function (see Appendix~(\ref{sub:ErrorFun})) is introduced. This is equivalent to a differential equation
+\begin{equation}
+    \frac{\partial u(r_{12},\mu)}{\partial r_{12}}=\frac{1-\operatorname{erf}(\mu r_{12})}{2},
+    \label{eqn:diffEqnJastrow}
+\end{equation}
+which gives the solution 
+\begin{equation}
+    u(r_{12};\mu)=\frac{1}{2}\left(1-\operatorname{erf}(\mu r_{12})\right)-\frac{1}{2\sqrt{\pi}\mu}e^{-(r_{12}\mu)^2},
+\end{equation}
+where the Jastrow factor $u(r_{12};\mu)$ depends on a unique parameter $\mu$. From here, we can see, as long as the Jastrow factor is wisely selected so that Eqn.~(\ref{eqn:diffEqnJastrow}) is fulfilled, the effect of $1/r_{ij}$ can be cancelled by $\tilde{W}(u)$.
+
+The reason that the error function is used is explained by~\cite{RS-DFT_Pernal} and the graph therein, see Fig.~(\ref{fig:RangeSeperation}).
+\begin{figure}
+    \centering
+    \includegraphics[width=0.4\textwidth]{RangeSeperation.png}
+    \caption{Long- and short-range electron interaction potentials, $\frac{\operatorname{erf}(\mu r_{12})}{r_{12}}$} (LR) and $\frac{1-\operatorname{erf}(\mu r_{12})}{r_{12}}$ (SR) for $\mu=1.0$ and $\mu=0.4$. Dots indicate position cutoff radius $r_C=1/\mu$. 
+    \label{fig:RangeSeperation}
+\end{figure}
+\begin{equation}
+    \bar{\textbf{H}}=\sum_{m,n=0}^{N-1}\omega^{\prime}_{mn}\sum_{i=0}^{\eta-1}\prod_{b=0}^{\log N-1}\textbf{X}_{i\log N +b}^{m_b}\textbf{Z}_{i\log N+b}^{n_b}+\frac{1}{2}\sum_{m,p=1}^{N-1}\gamma^{\prime}_{mp}\sum_{i\neq j}^{\eta-1}\prod_{b=0}^{\log N-1}\textbf{Z}_{i\log N+b}^{m_b}\textbf{Z}_{j\log N+b}^{p_b},
+\end{equation}
+where
+\begin{equation}
+    \omega^{\prime}_{mn}=
+    \begin{cases}
+        0 \quad \text{if} \, m=n=0, \\
+        \omega_{0n}+(N-1)\gamma_{0n} \quad \text{if} \, m=0, n\neq0,\\
+        \omega_{mn} \quad \text{otherwise}.
+    \end{cases}
+\end{equation}
+\begin{equation}
+    \gamma^{\prime}_{mp}=
+    \begin{cases}
+        0\quad \text{if} \, m=0\, \text{or}\, p=0 \\
+        \gamma_{mp} \quad \text{otherwise}
+    \end{cases}
+\end{equation}

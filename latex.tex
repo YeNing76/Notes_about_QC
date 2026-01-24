@@ -1,0 +1,127 @@
+\section{LaTeX 数学符号速查表}
+ 
+\begin{longtable}{|l|p{4cm}|l|p{6cm}|}
+\hline
+\textbf{类别} & \textbf{命令} & \textbf{效果} \\
+\hline
+\endfirsthead
+\multicolumn{4}{c}{\textit{To be continued}} \\
+\hline
+\textbf{类别} & \textbf{命令} & \textbf{效果}  \\
+\hline
+\endhead
+\hline
+\multicolumn{4}{r}{\textit{Continued on next page}} \\
+\endfoot
+\hline
+\endlastfoot
+
+横线 & \verb|\bar{x}| & $\bar{x}$ \\
+     & \verb|\overline{AB}| & $\overline{AB}$ \\
+\hline
+波浪线 & \verb|\tilde{x}| & $\tilde{x}$  \\
+       & \verb|\widetilde{AB}| & $\widetilde{AB}$  \\
+\hline
+帽子 & \verb|\hat{x}| & $\hat{x}$ \\
+     & \verb|\widehat{AB}| & $\widehat{AB}$ \\
+\hline
+向量 & \verb|\vec{v}| & $\vec{v}$  \\
+     & \verb|\bm{v}| & $\bm{v}$  \\
+\hline
+张量积 & \verb|\otimes| & $\otimes$ \\
+       & \verb|\bigotimes_{i=1}^n V_i| & $\bigotimes_{i=1}^n V_i$ \\
+\hline
+直和 & \verb|\oplus| & $\oplus$ \\
+     & \verb|\bigoplus_{i=1}^n V_i| & $\bigoplus_{i=1}^n V_i$ \\
+\hline
+楔积 & \verb|\wedge| & $\wedge$ \\
+~ & \verb|\bigwedge_{i=1}^n \omega_i| & $\bigwedge_{i=1}^n \omega_i$  \\
+\hline
+定义符号 & \verb|\coloneqq| & $\coloneqq$ \\
+\hline
+括号 & \verb|\left\{...\right\}| & $\left\{...\right\}$ \\
+     & \verb|\Bigg\{...\Bigg\}| & $\Bigg\{...\Bigg\}$  \\
+\hline
+左尖括号& \verb|\langle| & $\langle$  \\
+\hline
+花体O& \verb|\mathcal{O}| & $\mathcal{O}$ \\
+\hline
+范数 & \texttt{\textbackslash|x\textbackslash|} & $\|x\|$ \\
+  & \texttt{\textbackslash left\textbackslash| \textbackslash sum\_\{i=1\}\^{}n x\_i \textbackslash right\textbackslash| \_2} & $\left\| \sum_{i=1}^n x_i \right\|_2$ \\
+\hline
+上确界 & \verb|\sup| & $\sup$ \\
+下确界 & \verb|\inf| & $\inf$  \\
+\hline
+上方括号 & \verb|\lfloor x \rfloor| & $\lfloor x \rfloor$ \\
+下方括号 & \verb|\lceil x \rceil| & $\lceil x \rceil$  \\
+\hline
+分段函数 & \texttt{\textbackslash begin\{cases\} ... \textbackslash end\{cases\}}  & $f(x) = \begin{cases} x^2 & \text{当 } x \geq 0 \\ -x  & \text{当 } x < 0\end{cases}$  \\
+\hline
+方括号矩阵&\texttt{\textbackslash begin\{bmatrix\} ... \textbackslash end\{bmatrix\}} & $\begin{bmatrix}
+     1&1\\1&1
+\end{bmatrix}$  \\
+\hline
+分段长公式 & \texttt{\textbackslash begin\{split\}...\textbackslash end\{split\}} &
+$\begin{aligned}
+x &= ... \\
+  &= ...
+\end{aligned}$  \\
+\hline
+水平省略号 & \texttt{\textbackslash cdots} & $\cdots$ \\
+垂直省略号 & \texttt{\textbackslash vdots} & $\vdots$  \\
+对角省略号 & \texttt{\textbackslash ddots} & $\ddots$  \\
+自动省略号 & \texttt{\textbackslash dots} & $\dots$  \\
+加法省略号 & \texttt{\textbackslash dotsb} & $a_1 + a_2 + \dotsb + a_n$ \\
+逗号省略号 & \texttt{\textbackslash dotsc} & $a_1, a_2, \dotsc, a_n$ \\
+乘法省略号 & \texttt{\textbackslash dotsm} & $a_1 a_2 \dotsm a_n$ \\
+积分省略号 & \texttt{\textbackslash dotsi} & $\int \dotsi \int$ \\
+其他省略号 & \texttt{\textbackslash dotso} & $\dotso$ \\
+\hline
+无序列表 & \parbox[t]{4cm}{\texttt{\textbackslash begin\{itemize\}}\\...\texttt{\textbackslash end\{itemize\}}} & \parbox[t]{4.5cm}{\begin{itemize}\item 项目一\item 项目二\end{itemize}}  \\
+有序列表 & \parbox[t]{4cm}{\texttt{\textbackslash begin\{enumerate\}}\\...\texttt{\textbackslash end\{enumerate\}}}& \parbox[t]{4.5cm}{\begin{enumerate}\item 项目一\item 项目二\end{enumerate}}  \\
+嵌套列表 & \texttt{itemize} 或 \texttt{enumerate} 嵌套使用 & 多层 bullet 或编号 \\
+自定义编号 & \texttt{\textbackslash usepackage\{enumitem\}} + \texttt{label=\textbackslash alph*)} 等 & \parbox[t]{4.5cm}{
+  \begin{enumerate}[label=\alph*)]
+    \item 项目一
+    \item 项目二
+  \end{enumerate}
+} \\
+透明占位符 & \texttt{\textbackslash phantom\{内容\}} 或 \texttt{\textasciitilde} & 空白但占位  \\
+\hline
+结构性注释（下方） & \parbox[t]{4cm}{\texttt{\textbackslash underbrace\{表达式\}\_\{\text\{注释\}\}}} & $\underbrace{a + b + c}_{\text{总项}}$ \\
+结构性注释（上方） & \parbox[t]{4cm}{\texttt{\textbackslash overbrace\{表达式\}\^\{\text\{注释\}\}}} & $\overbrace{a + b + c}^{\text{总项}}$ \\
+\hline
+数学右箭头 & \texttt{\textbackslash rightarrow} & \(\rightarrow\) \\
+数学左箭头 & \texttt{\textbackslash leftarrow} & \(\leftarrow\)\\
+双向箭头 & \texttt{\textbackslash leftrightarrow} & \(\leftrightarrow\)  \\
+长右箭头 & \texttt{\textbackslash longrightarrow} & \(\longrightarrow\) \\
+长左箭头 & \texttt{\textbackslash longleftarrow} & \(\longleftarrow\)  \\
+长双向箭头 & \texttt{\textbackslash longleftrightarrow} & \(\longleftrightarrow\)\\
+右双箭头 & \texttt{\textbackslash Rightarrow} & \(\Rightarrow\)  \\
+左双箭头 & \texttt{\textbackslash Leftarrow} & \(\Leftarrow\)  \\
+双向双箭头 & \texttt{\textbackslash Leftrightarrow} & \(\Leftrightarrow\)  \\
+向上箭头 & \texttt{\textbackslash uparrow} & \(\uparrow\) \\
+向下箭头 & \texttt{\textbackslash downarrow} & \(\downarrow\) \\
+上下箭头 & \texttt{\textbackslash updownarrow} & \(\updownarrow\) \\
+双向上下箭头 & \texttt{\textbackslash Updownarrow} & \(\Updownarrow\) \\
+带标签箭头 & \texttt{\textbackslash xrightarrow\{标签\}} & \(\xrightarrow{f}\)  \\
+带标签左箭头 & \texttt{\textbackslash xleftarrow\{标签\}} & \(\xleftarrow{g}\)  \\
+\hline
+带圈符号（基础） & \verb|\odot| & $\odot$ & 小圆圈中有点（你最常用的） \\ 
+\hline 带圈符号（基础） & \verb|\oplus| & $\oplus$ & 圆圈加号，直和、XOR \\ 
+\hline 带圈符号（基础） & \verb|\ominus| & $\ominus$ & 圆圈减号 \\ 
+\hline 带圈符号（基础） & \verb|\otimes| & $\otimes$ & 张量积，Kronecker 积 \\ 
+\hline 带圈符号（基础） & \verb|\oslash| & $\oslash$ & 圆圈除号 \\ \hline 带圈符号（基础） & \verb|\circ| & $\circ$ & 小圆圈，函数复合 \\ 
+\hline 带圈符号（基础） & \verb|\bigcirc| & $\bigcirc$ & 大圆圈 \\ 
+\hline 带圈符号（扩展） & \verb|\circledast| & $\circledast$ & 圆圈星号 \\ 
+\hline 带圈符号（扩展） & \verb|\circledcirc| & $\circledcirc$ & 双圈 \\ 
+\hline 带圈符号（扩展） & \verb|\circleddash| & $\circleddash$ & 圆圈短横 \\
+\hline 文本带圈符号 & \verb|\textcircled{A}| & \textcircled{A} & 文本模式下的带圈字符 \\ 
+\hline 自定义带圈符号 & \verb|\tikz \node[circle,draw]{...};| & ○ & 可放任意符号，完全自定义 \\ 
+\hline
+\end{longtable}
+
+\vspace{1em}
+\noindent
+\textbf{推荐宏包：} \verb|\usepackage{amsmath, amssymb, bm, mathtools}|
+

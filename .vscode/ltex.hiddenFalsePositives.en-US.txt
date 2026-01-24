@@ -1,0 +1,2 @@
+{"rule":"A_RB_NN","sentence":"^\\QThis requirement can only be achieved by the dynamic construction process of the qubit gates, not the afterward correction by classical bits.\\E$"}
+{"rule":"ENGLISH_WORD_REPEAT_BEGINNING_RULE","sentence":"^\\QIn other words, those two parameters control whether the electrons tend to the \"stable combination\" or to the \"exited combination\" of the chemical bonds.\\E$"}
