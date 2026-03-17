@@ -1,16 +1,18 @@
 \section{The Variational Quantum Eigensolver (VQE)}
-The following contents are mainly from~\cite{Peruzzo2014VQE, Abhijith2018QuantumBeginner}. Before the invention of VQE, the quantum approach to eigenvalue problem is quantum phase estimation (QPE). In this algorithm, the eigenvector $\ket{\psi}$ of a Hermitian operator $\mathcal{H}$ is regarded as input and the problem is to calculate the corresponding eigenvalue $\lambda$, which is determined by successive application of $e^{-i\mathcal{H}t}$ onto $\ket{\psi}$. However, this method needs millions or billions of quantum gates for practical application while only tens to hundreds of gates are available right now. 
+The following contents are mainly from~\cite{IBMQuantumVQE, Abhijith2018QuantumBeginner, Peruzzo2014VQE}. VQE is an algorithm that uses classical and quantum computing in conjunction to accomplish a task.  Usually, the VQE is composed of four parts: an operator, an "ansatz", an estimator and a classical optimizer. The operator is often a Hamiltonian $\mathcal{H}$, that describes the property of the system we are studying. We need to use the variational method to figure out the eigenvector of the operator to minimize the eigenvalue. The ansatz is actually a quantum circuit that prepares a quantum state approximating the eigenvector we are seeking. The gates in the ansatz are parametrized, and we can vary those parameters iteratively so that we can obtain the minimum eigenvalue. The estimator is a means of estimating the expectation value of the opertor $\mathcal{H}$ over the current quantum state. In the following question we are dealing with (the quantum chemical computation see section~\ref{section:AdaptiveGridMethod}),  the ultimalte result that I care about is the expectiona value, which is related to the eigenvaluees (energy level) of the system, and this expectation value is also called the cost function.   
+
+Before the invention of VQE, the quantum approach to eigenvalue problem is quantum phase estimation (QPE). In this algorithm, the eigenvector $\ket{\psi}$ of a Hermitian operator $\mathcal{H}$ is regarded as input and the problem is to calculate the corresponding eigenvalue $\lambda$, which is determined by successive application of $e^{-i\mathcal{H}t}$ onto $\ket{\psi}$. However, this method needs millions or billions of quantum gates for practical application while only tens to hundreds of gates are available right now. 
 
 To overcome this difficulty, VQE is introduced to solve the eigenvalue problem by figuring out the $\ket{\psi}$ that can minimizes the so-called Rayleigh-Ritz quotient:
 \begin{equation}
     \frac{\bra{\psi}\mathcal{H}\ket{\psi}}{\langle\psi\ket{\psi}},
 \end{equation}
-via a variational method. To realize the quantum computation, the Hamiltonian should be written into the second quantization form:
+via a variational method. To realize the quantum computation, the Hamiltonian can be written into the second quantization form:
 \begin{equation}
     \mathcal{H}=\sum_{p,q}h_{pq}a^\dagger_pa_q+\frac{1}{2}\sum_{p,q,r,s}h_{pqrs}a^\dagger_pa^\dagger_q a_r a_s,
     \label{eqn:secondQuantizedHam}
 \end{equation}
-where $a^\dagger_p$ and $a_p$ are fermionic creation and annihilation operators, respectively. The real numbers ``$h$''s are one- or two-electron integrals that can be easily computed on a classical computer. Then this formulation should be further mapped onto a quantum computer to calculate
+where $a^\dagger_p$ and $a_p$ are fermionic creation and annihilation operators, respectively. The real numbers $h$'s are one- or two-electron integrals that can be easily computed on a classical computer. Then this formulation should be further mapped onto a quantum computer to calculate
 \begin{equation}
     \label{secondQuantizedH}
     \mathcal{H}=\sum_{i\alpha}h^i_\alpha\sigma^i_\alpha + \sum_{ij\alpha\beta}h^{ij}_{\alpha\beta}\sigma^i_\alpha\sigma^j_\beta+\dots.
@@ -24,6 +26,71 @@ where $a^\dagger_p$ and $a_p$ are fermionic creation and annihilation operators,
  \begin{equation}
     \langle\mathcal{H}\rangle=\sum_{i\alpha}\langle\sigma_\alpha^i\rangle+\sum_{ij\alpha\beta}\langle\sigma_\alpha^i\sigma_\beta^j\rangle+\dots.
  \end{equation}
+ The following snippet of Python code is from~\cite{IBMQuantumVQE}, demonstrating how the operator is presented as code:
+ \begin{lstlisting}[language=Python, caption=Constructing an Operator, frame=single, label={lst:Constructing Operator}]
+from qiskit.quantum_info import SparsePauliOp
+ 
+hamiltonian = SparsePauliOp(
+    [
+        "IIII",
+        "IIIZ",
+        "IZII",
+        "IIZI",
+        "ZIII",
+        "IZIZ",
+        "IIZZ",
+        "ZIIZ",
+        "IZZI",
+        "ZZII",
+        "ZIZI",
+        "YYYY",
+        "XXYY",
+        "YYXX",
+        "XXXX",
+    ],
+    coeffs=[
+        -0.09820182 + 0.0j,
+        -0.1740751 + 0.0j,
+        -0.1740751 + 0.0j,
+        0.2242933 + 0.0j,
+        0.2242933 + 0.0j,
+        0.16891402 + 0.0j,
+        0.1210099 + 0.0j,
+        0.16631441 + 0.0j,
+        0.16631441 + 0.0j,
+        0.1210099 + 0.0j,
+        0.17504456 + 0.0j,
+        0.04530451 + 0.0j,
+        0.04530451 + 0.0j,
+        0.04530451 + 0.0j,
+        0.04530451 + 0.0j,
+    ],
+)
+\end{lstlisting}
+The listing above describes a $16\times16$ Hamiltonian matrix. The reason is that the length of each Pauli string, such as \tcbox[inlinebox]{IIII}, or \tcbox[inlinebox]{YYYY}, is four. For a $n$-bit Hilbert space, its dimension is $2^n$. Therefore, for $n=4$, its dimensionality is $2^4=16$. Besides, in the \tcbox[inlinebox]{SparsePauliOp} class, those Pauli strings and coefficients are strictly one-to-one related. Take the second Pauli string \tcbox[inlinebox]{IIIZ} as an example, its corresponding coefficient is \tcbox[inlinebox]{-0.1740751}. Considering \tcbox[inlinebox]{IIIZ} is a 4 qubits Pauli tensor product:
+\[
+"IIIZ"=I\otimes I\otimes I\otimes Z,
+\]
+this Pauli string/coefficient pair denotes $-0.1740751\cdot(I\otimes I\otimes I\otimes Z)$.
+In~\cite{IBMQuantumVQE}, we can also read of the comments of the listing above like:
+\begin{quote}
+    Note that in the Hamiltonian above, there are terms like ZZII and YYYY that do not commute with each other. That is, to evaluate ZZII, we would need to measure the Pauli Z operator on qubit 3 (among other measurements). But to evaluate YYYY, we need to measure the Pauli Y operator on that same qubit, qubit 3. There is an uncertainty relation between Y and Z operators on the same qubit; we cannot measure both of those operators at the same time.
+\end{quote}
+In this quotation, we can see there is a problem concerning the measuements of the uncommutative operators. So, how to solve the problem? The answer to this question is: measurement in batches. That means we do not perform the measurements simmultaneous, instead, in every batch of measurement the quantum state will be appropriately rotated to $Z$ basis if necessary, since quantum computer can only measure $Z$ basis. For example, if we want to measure $Y$, we must rotate $Y$ into $Z$:
+\[
+Y = R_x\!\left(-\frac{\pi}{2}\right) Z R_x\!\left(\frac{\pi}{2}\right).
+\]
+After measured upon $Z$, the result will be interperated as measurement upon $Y$. This method does not vilote the priciple of uncertainty, since we do not perform the measurement simultaneously. Instead, for each batch of the measurement, we prepare the same input state. To realize the batch measurement efficiently, we need to catogarize the Pauli strings wisely to decrease the times of measuring. Since it is more like an engineering problem, details of this issue will not be mentioned here.
+
+\begin{figure}[ht]
+\centering
+    \begin{quantikz}
+        \lstick{$\ket{0}$} & \gate{R_y(\theta_0)} & \ctrl{1} & \qw & \ctrl{1} & \gate{R_y(\theta_3)} & \qw \\
+        \lstick{$\ket{0}$} & \gate{R_x(\theta_1)} & \targ{} & \gate{R_z(\theta_2)} & \targ{} & \gate{R_x(\theta_4)} & \qw
+    \end{quantikz}
+\caption{Five-Step Ansatz}
+\label{fig:FiveStepAnsatz}
+\end{figure}
  
 \subsection{Something about ADAPT-VQE}
 ADAPT-VQE  is a smart greedy algorithm. However, it constructs the ansatz by including the exciting operators (single-excitation, double-excitation) in a term-by-term manner (organically growth). For each step of including a new term, the purpose is to maximize the energy drop (energy gradient), regardless whether if it is a violation of the symmetry of the system. As a result, it can give rise to a low-energy but non-physical state, such as violating the conservation of particle number or spin symmetry.
