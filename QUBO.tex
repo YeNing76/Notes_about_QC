@@ -1,1 +1,17 @@
-\section{Quadratic Unconstrained Binary Optimization (QUBO) Formulation}
+\section{Quadratic Unconstrained Binary Optimization (QUBO) and Ising Model}
+The following content is from the tutorial held by D-Wave. In the context of D-Wave's quantum annealing, QUBO and the Ising model are the two primary mathematical frameworks used to formulate optimization problems. Both are unified under the broader category of \textbf{Binary Quadratic Models (BQM)}.
+QUBO is a mathematical representation of an optimization problem where the objective function is a quadratic polynomial of binary variables. The goal is to find the assignment of these binary variables that minimizes (or maximizes) the objective function. 
+Unconstrained means that there are no explicit constraints on the variables, allowing for a more flexible formulation of problems. The QUBO formulation is particularly useful in quantum computing and optimization, as it can be directly mapped to the hardware of quantum annealers like those developed by D-Wave.
+\subsection{QUBO Formulation}
+Because $x^2 = x$ for binary variables, the QUBO formulation can be expressed as:
+\begin{equation}
+\min_{x \in \{0,1\}^n} x^T Q x
+\label{eqn:qubo}
+\end{equation}
+where $x$ is a vector of binary variables, and $Q$ is an upper triangular matrix that defines the coefficients of the quadratic terms. The elements of $Q$ represent the interactions between the binary variables, and the diagonal elements represent the linear terms.
+Here are some specific examples of QUBO formulations for numbers of varaibles:
+\begin{itemize}
+\item One-variable QUBO: $Q = [1]$, the objective function is $f(x) = x$.
+\item Two-variable QUBO: $Q = \begin{bmatrix} 1 & 2 \\ 0 & 3 \end{bmatrix}$, the objective function is $f(x_1, x_2) = x_1 + 2x_1x_2 + 3x_2$.
+\item Three-variable QUBO: $Q = \begin{bmatrix} 1 & 2 & 3 \\ 0 & 4 & 5 \\ 0 & 0 & 6 \end{bmatrix}$, the objective function is $f(x_1, x_2, x_3) = x_1 + 2x_1x_2 + 3x_1x_3 + 4x_2 + 5x_2x_3 + 6x_3$.
+\end{itemize}

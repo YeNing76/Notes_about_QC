@@ -1,11 +1,10 @@
 \documentclass{article}
 \usepackage[UTF8]{ctex}
 \usepackage[a4paper, total={6in, 8in}]{geometry}
-\usepackage{graphicx} % Required for inserting images
+\usepackage{graphicx}
 \usepackage{float}
 \graphicspath{{images/}}
 \usepackage{booktabs}
-\usepackage[numbers]{natbib}
 \usepackage{enumitem}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -13,9 +12,7 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{bm}
-%\usepackage{tikz}
-\usepackage{quantikz} % 用来画量子电路
-\usetikzlibrary{arrows.meta}
+\usepackage{quantikz}
 \usetikzlibrary{arrows.meta, positioning}
 \usepackage{listings}
 \usepackage{csquotes}
@@ -23,16 +20,15 @@
 \usepackage{longtable}
 \usepackage{ltablex}
 \keepXColumns
-\usepackage{booktabs}
 \usepackage{caption}
-% \usepackage[backend=biber]{biblatex}
-% \addbibresource{references.bib} % 替换为你的 .bib 文件名
-
 \usepackage[colorlinks=true, linkcolor=blue, urlcolor=cyan]{hyperref}
 \usepackage{xcolor}
 \usepackage[most]{tcolorbox}
-\usepackage{hyperref}
-%\usepackage{braket}
+
+% ★★ 关键部分：启用 biblatex + biber ★★
+\usepackage[backend=biber,style=numeric]{biblatex}
+\addbibresource{references.bib}
+
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{axiom}{Axiom}
@@ -80,10 +76,10 @@ inlinebox/.style={enhanced, boxrule=0.5pt, colframe=orange!80!black, colback=ora
 \include{Qiskit}
 \include{algorithm}
 \include{adaptiveGrid}
+\include{QUBO}
 \appendix
 \include{FormulaeDerivation}
 \include{SpecialFunction}
 \include{latex}
-\bibliographystyle{unsrt}
-\bibliography{references}
+\printbibliography
 \end{document}

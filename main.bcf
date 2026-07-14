@@ -2361,13 +2361,58 @@
     <bcf:datasource type="file" datatype="bibtex" glob="false">references.bib</bcf:datasource>
   </bcf:bibdata>
   <bcf:section number="0">
-    <bcf:citekey order="3" intorder="1">UnbChemistry</bcf:citekey>
-    <bcf:citekey order="4" intorder="1">UnbChemistry</bcf:citekey>
+    <bcf:citekey order="1" intorder="1">IBMQuantumVQE</bcf:citekey>
+    <bcf:citekey order="1" intorder="2">Abhijith2018QuantumBeginner</bcf:citekey>
+    <bcf:citekey order="1" intorder="3">Peruzzo2014VQE</bcf:citekey>
+    <bcf:citekey order="2" intorder="1">IBMQuantumVQE</bcf:citekey>
+    <bcf:citekey order="3" intorder="1">IBMQuantumVQE</bcf:citekey>
+    <bcf:citekey order="4" intorder="1">IBMQuantumVQE</bcf:citekey>
     <bcf:citekey order="5" intorder="1">UnbChemistry</bcf:citekey>
     <bcf:citekey order="6" intorder="1">UnbChemistry</bcf:citekey>
     <bcf:citekey order="7" intorder="1">transfer2015BKmapping</bcf:citekey>
-    <bcf:citekey order="8" intorder="1">UnbChemistry</bcf:citekey>
+    <bcf:citekey order="8" intorder="1">TensorNetwork</bcf:citekey>
     <bcf:citekey order="9" intorder="1">UnbChemistry</bcf:citekey>
+    <bcf:citekey order="10" intorder="1">UnbChemistry</bcf:citekey>
+    <bcf:citekey order="11" intorder="1">UnbChemistry</bcf:citekey>
+    <bcf:citekey order="12" intorder="1">Abhijith2018QuantumBeginner</bcf:citekey>
+    <bcf:citekey order="13" intorder="1">Abhijith2018QuantumBeginner</bcf:citekey>
+    <bcf:citekey order="13" intorder="2">NielsenChuang2010</bcf:citekey>
+    <bcf:citekey order="13" intorder="3">Hidary2019QCBook</bcf:citekey>
+    <bcf:citekey order="14" intorder="1">Abhijith2018QuantumBeginner</bcf:citekey>
+    <bcf:citekey order="14" intorder="2">NielsenChuang2010</bcf:citekey>
+    <bcf:citekey order="14" intorder="3">Hidary2019QCBook</bcf:citekey>
+    <bcf:citekey order="15" intorder="1">RobertLoredo2020</bcf:citekey>
+    <bcf:citekey order="16" intorder="1">NielsenChuang2010</bcf:citekey>
+    <bcf:citekey order="17" intorder="1">NielsenChuang2010</bcf:citekey>
+    <bcf:citekey order="18" intorder="1">Abhijith2018QuantumBeginner</bcf:citekey>
+    <bcf:citekey order="18" intorder="2">NielsenChuang2010</bcf:citekey>
+    <bcf:citekey order="19" intorder="1">Robledo_Moreno_2025</bcf:citekey>
+    <bcf:citekey order="19" intorder="2">ibm2024sqd</bcf:citekey>
+    <bcf:citekey order="20" intorder="1">motta2023lucj</bcf:citekey>
+    <bcf:citekey order="21" intorder="1">Jastrow1955</bcf:citekey>
+    <bcf:citekey order="22" intorder="1">ibm2024sqd</bcf:citekey>
+    <bcf:citekey order="22" intorder="2">motta2023lucj</bcf:citekey>
+    <bcf:citekey order="23" intorder="1">feniou2025realspacechemistryquantumcomputers</bcf:citekey>
+    <bcf:citekey order="24" intorder="1">Georges_2025</bcf:citekey>
+    <bcf:citekey order="25" intorder="1">Georges_2025</bcf:citekey>
+    <bcf:citekey order="26" intorder="1">Georges_2025</bcf:citekey>
+    <bcf:citekey order="27" intorder="1">feniou2025realspacechemistryquantumcomputers</bcf:citekey>
+    <bcf:citekey order="28" intorder="1">inproceedings</bcf:citekey>
+    <bcf:citekey order="29" intorder="1">shao2020eigenvalue</bcf:citekey>
+    <bcf:citekey order="30" intorder="1">inproceedings</bcf:citekey>
+    <bcf:citekey order="31" intorder="1">inproceedings</bcf:citekey>
+    <bcf:citekey order="32" intorder="1">feniou2025realspacechemistryquantumcomputers</bcf:citekey>
+    <bcf:citekey order="33" intorder="1">feniou2025realspacechemistryquantumcomputers</bcf:citekey>
+    <bcf:citekey order="34" intorder="1">feniou2025realspacechemistryquantumcomputers</bcf:citekey>
+    <bcf:citekey order="35" intorder="1">cohen2019SimilarityTransformation</bcf:citekey>
+    <bcf:citekey order="36" intorder="1">cohen2019SimilarityTransformation</bcf:citekey>
+    <bcf:citekey order="37" intorder="1">feniou2025realspacechemistryquantumcomputers</bcf:citekey>
+    <bcf:citekey order="38" intorder="1">giner2021transcorrelated</bcf:citekey>
+    <bcf:citekey order="39" intorder="1">RS-DFT_Pernal</bcf:citekey>
+    <bcf:citekey order="40" intorder="1">RS-DFT_Pernal</bcf:citekey>
+    <bcf:citekey order="41" intorder="1">giner2021transcorrelated</bcf:citekey>
+    <bcf:citekey order="42" intorder="1">HYLLERAAS19641</bcf:citekey>
+    <bcf:citekey order="43" intorder="1">feniou2025realspacechemistryquantumcomputers</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nty">
@@ -2399,4 +2444,13 @@
     </bcf:sort>
   </bcf:sortingtemplate>
   <!-- DATALISTS -->
+  <bcf:datalist section="0"
+                name="nty/global//global/global"
+                type="entry"
+                sortingtemplatename="nty"
+                sortingnamekeytemplatename="global"
+                labelprefix=""
+                uniquenametemplatename="global"
+                labelalphanametemplatename="global">
+  </bcf:datalist>
 </bcf:controlfile>
