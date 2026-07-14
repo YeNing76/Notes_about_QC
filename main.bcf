@@ -2410,9 +2410,11 @@
     <bcf:citekey order="38" intorder="1">giner2021transcorrelated</bcf:citekey>
     <bcf:citekey order="39" intorder="1">RS-DFT_Pernal</bcf:citekey>
     <bcf:citekey order="40" intorder="1">RS-DFT_Pernal</bcf:citekey>
-    <bcf:citekey order="41" intorder="1">giner2021transcorrelated</bcf:citekey>
-    <bcf:citekey order="42" intorder="1">HYLLERAAS19641</bcf:citekey>
-    <bcf:citekey order="43" intorder="1">feniou2025realspacechemistryquantumcomputers</bcf:citekey>
+    <bcf:citekey order="41" intorder="1">DWAVE_Tutorial</bcf:citekey>
+    <bcf:citekey order="42" intorder="1">Lucas_2014</bcf:citekey>
+    <bcf:citekey order="43" intorder="1">giner2021transcorrelated</bcf:citekey>
+    <bcf:citekey order="44" intorder="1">HYLLERAAS19641</bcf:citekey>
+    <bcf:citekey order="45" intorder="1">feniou2025realspacechemistryquantumcomputers</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nty">

@@ -417,6 +417,28 @@
       \verb https://arxiv.org/abs/2101.09944
       \endverb
     \endentry
+    \entry{DWAVE_Tutorial}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=f9cf2c5a02e77dc21898b7ff49429b31}{%
+           family={Gotautle},
+           familyi={G\bibinitperiod},
+           given={Joel},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{f9cf2c5a02e77dc21898b7ff49429b31}
+      \strng{fullhash}{f9cf2c5a02e77dc21898b7ff49429b31}
+      \strng{bibnamehash}{f9cf2c5a02e77dc21898b7ff49429b31}
+      \strng{authorbibnamehash}{f9cf2c5a02e77dc21898b7ff49429b31}
+      \strng{authornamehash}{f9cf2c5a02e77dc21898b7ff49429b31}
+      \strng{authorfullhash}{f9cf2c5a02e77dc21898b7ff49429b31}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://www.youtube.com/watch?v=teraaPiaG8s&list=PLPvKnT7dgEsujrrP7i_mgbkivBN3J6A8u}}
+      \field{title}{Tutorial from DWAVE}
+      \field{year}{2021}
+    \endentry
     \entry{Hidary2019QCBook}{book}{}
       \name{author}{1}{}{%
         {{hash=8ba83e9608c5a94a9f639dd5ea21b1b1}{%
@@ -828,6 +850,42 @@
       \endverb
       \verb{url}
       \verb https://www.researchgate.net/publication/386261589_Quantum_Eigenvalue_Processing
+      \endverb
+    \endentry
+    \entry{Lucas_2014}{article}{}
+      \name{author}{1}{}{%
+        {{hash=c24283f2760f25196eeb40788d2733b1}{%
+           family={Lucas},
+           familyi={L\bibinitperiod},
+           given={Andrew},
+           giveni={A\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Frontiers Media SA}%
+      }
+      \strng{namehash}{c24283f2760f25196eeb40788d2733b1}
+      \strng{fullhash}{c24283f2760f25196eeb40788d2733b1}
+      \strng{bibnamehash}{c24283f2760f25196eeb40788d2733b1}
+      \strng{authorbibnamehash}{c24283f2760f25196eeb40788d2733b1}
+      \strng{authornamehash}{c24283f2760f25196eeb40788d2733b1}
+      \strng{authorfullhash}{c24283f2760f25196eeb40788d2733b1}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{2296-424X}
+      \field{journaltitle}{Frontiers in Physics}
+      \field{title}{Ising formulations of many NP problems}
+      \field{volume}{2}
+      \field{year}{2014}
+      \verb{doi}
+      \verb 10.3389/fphy.2014.00005
+      \endverb
+      \verb{urlraw}
+      \verb http://dx.doi.org/10.3389/fphy.2014.00005
+      \endverb
+      \verb{url}
+      \verb http://dx.doi.org/10.3389/fphy.2014.00005
       \endverb
     \endentry
     \entry{motta2023lucj}{article}{}

@@ -45,10 +45,12 @@
 \contentsline {subsubsection}{\numberline {6.4.3}Why Error Function is Used?}{53}{subsubsection.6.4.3}%
 \contentsline {section}{\numberline {7}Quadratic Unconstrained Binary Optimization (QUBO) and Ising Model}{56}{section.7}%
 \contentsline {subsection}{\numberline {7.1}QUBO Formulation}{56}{subsection.7.1}%
-\contentsline {section}{\numberline {A}Derivation of Formulae}{57}{appendix.A}%
-\contentsline {subsection}{\numberline {A.1}Laplacian of two electron system}{57}{subsection.A.1}%
-\contentsline {subsection}{\numberline {A.2}Exponentiate Matrix}{59}{subsection.A.2}%
-\contentsline {section}{\numberline {B}Special Functions}{61}{appendix.B}%
-\contentsline {subsection}{\numberline {B.1}Chebyshev Polynomials}{61}{subsection.B.1}%
-\contentsline {subsection}{\numberline {B.2}Error Function}{62}{subsection.B.2}%
-\contentsline {section}{\numberline {C}LaTeX 数学符号速查表}{64}{appendix.C}%
+\contentsline {subsection}{\numberline {7.2}Ising Model}{57}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Application of QUBO and Ising model}{58}{subsection.7.3}%
+\contentsline {section}{\numberline {A}Derivation of Formulae}{59}{appendix.A}%
+\contentsline {subsection}{\numberline {A.1}Laplacian of two electron system}{59}{subsection.A.1}%
+\contentsline {subsection}{\numberline {A.2}Exponentiate Matrix}{61}{subsection.A.2}%
+\contentsline {section}{\numberline {B}Special Functions}{63}{appendix.B}%
+\contentsline {subsection}{\numberline {B.1}Chebyshev Polynomials}{63}{subsection.B.1}%
+\contentsline {subsection}{\numberline {B.2}Error Function}{64}{subsection.B.2}%
+\contentsline {section}{\numberline {C}LaTeX 数学符号速查表}{66}{appendix.C}%
