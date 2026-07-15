@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999995 (MiKTeX 24.1) (preloaded format=xelatex 2025.7.9)  14 JUL 2026 18:00
+This is XeTeX, Version 3.141592653-2.6-0.999995 (MiKTeX 24.1) (preloaded format=xelatex 2025.7.9)  15 JUL 2026 11:47
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1698,25 +1698,26 @@ File: images/RangeSeperation.png Graphic file (type bmp)
 
 
 
-] [57]) [58]
+] [57] [58] [59] [60]) [61] [62]
 \openout2 = `FormulaeDerivation.aux'.
 
- (FormulaeDerivation.tex [59
+
+(FormulaeDerivation.tex [63
 
 
 
-] [60]
-[61]) [62]
+] [64] [65]) [66]
 \openout2 = `SpecialFunction.aux'.
 
- (SpecialFunction.tex [63
+ (SpecialFunction.tex [67
 
 
 
 ]
 File: images/Error_Function.svg.png Graphic file (type bmp)
 <images/Error_Function.svg.png>
- [64]) [65]
+ [68])
+[69]
 \openout2 = `latex.aux'.
 
  (latex.tex
@@ -1818,11 +1819,11 @@ Overfull \hbox (117.8297pt too wide) in alignment at lines 17--122
  [] [] [] [] 
  []
 
-[66
+[70
 
 
 
-] [67]) [68]
+] [71]) [72]
 Overfull \hbox (4.9373pt too wide) in paragraph at lines 85--85
 []\TU/lmr/m/n/10.53937 Aleksandr Berezutskii et al. “  Tensor Networks for Quan
 tum Computing ”. In: \TU/lmr/m/it/10.53937 arXiv preprint
@@ -1841,7 +1842,7 @@ Overfull \hbox (11.00926pt too wide) in paragraph at lines 85--85
 ][] [] [][][][][] [] [] [] [][][][][][][][][][][] []
  []
 
-[69
+[73
 
 
 ]
@@ -1850,7 +1851,7 @@ Overfull \hbox (1.20775pt too wide) in paragraph at lines 85--85
 lticonfigurational density func-
  []
 
-[70] [71] (main.aux (introduction.aux) (VQE.aux) (Basis.aux) (Qiskit.aux)
+[74] [75] (main.aux (introduction.aux) (VQE.aux) (Basis.aux) (Qiskit.aux)
 (algorithm.aux) (adaptiveGrid.aux) (QUBO.aux) (FormulaeDerivation.aux)
 (SpecialFunction.aux) (latex.aux))
  ***********
@@ -1866,7 +1867,7 @@ LaTeX Font Warning: Size substitutions with differences
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 1B5D13AE1DC6FDAE9268DF030BAF4755;11038.
+(rerunfilecheck)             Checksum: 414E2BB9EBF4C25F7B468B3615DB7687;11286.
 
 Package biblatex Warning: Please (re)run Biber on the file:
 (biblatex)                main
@@ -1877,12 +1878,12 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 50707 strings out of 409617
- 1100985 string characters out of 5781119
- 2037630 words of memory out of 5000000
- 71995 multiletter control sequences out of 15000+600000
- 574904 words of font info for 141 fonts, out of 8000000 for 9000
+ 50747 strings out of 409617
+ 1101589 string characters out of 5781119
+ 2038504 words of memory out of 5000000
+ 72033 multiletter control sequences out of 15000+600000
+ 574912 words of font info for 142 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  102i,25n,117p,2016b,4967s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on main.pdf (71 pages).
+Output written on main.pdf (75 pages).

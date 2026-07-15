@@ -60,3 +60,166 @@ QUBO and Ising models can be used to solve a wide range of computational problem
     \item  Machine Learning: QUBO and Ising models can be applied to various machine learning tasks, such as feature selection, clustering, and training of certain types of neural networks, by formulating the learning objectives as optimization problems.
     \item  Constraint Satisfaction Problems: Many constraint satisfaction problems, such as satisfiability (SAT) and scheduling problems, can be expressed in QUBO or Ising form, enabling the use of quantum annealing or other optimization techniques to find feasible solutions.
 \end{enumerate}
+
+\subsection{Some simple problems sovled by QUBO}
+\textbf{Problem 1:} Favored Same-value Problem: Given a set of binary variables, the goal is to find an assignment that maximizes the number of variables that have the same value. 
+
+This problem can be formulated as a QUBO problem by defining an objective function that counts the number of pairs of variables with the same value and then minimizing the negative of this count.
+To solve this problem, we can define a QUBO matrix $Q$ such that the objective function $f(x) = x^T Q x$ represents the number of pairs of variables with the same value. The elements of $Q$ can be set to encourage pairs of variables to take the same value, and the optimization process will seek to maximize this count by minimizing the negative of the objective function.
+More specifically, we can set the objective function as $f(x_1, x_2)=ax_1+bx_2+cx_1x_2+d$, where $a$, $b$, $c$, and $d$ are coefficients that can be adjusted to achieve the desired optimization goal. We can set up a truth table to illustrate the relationship between the binary variables and the objective function:
+\begin{table}[ht]
+\centering
+\caption{Truth Table for Problem 1}
+\label{tab:truth_table_1}
+\begin{tabular}{|c|c|c|}
+\hline
+$x_1$ & $x_2$ & $f(x_1, x_2)$ \\
+\hline
+0 & 0 & $d=0$ \\
+0 & 1 & $b+d=1$ \\
+1 & 0 & $a+d=1$ \\
+1 & 1 & $a+b+c+d=0$ \\
+\hline
+\end{tabular}
+\end{table}
+
+Therefore, we can set $a=1$, $b=1$, $c=-2$, and $d=0$ to achieve the desired optimization goal. The resulting QUBO matrix $Q$ can be constructed as follows:
+\begin{equation}
+Q = \begin{pmatrix}
+a & c \\
+c & b
+\end{pmatrix} = \begin{pmatrix}
+1 & -2 \\
+-2 & 1
+\end{pmatrix}
+\end{equation}
+
+\textbf{Problem 2:} Favored Different-value Problem: Given a set of binary variables, the goal of this problem is to find an assignment that maximizes the number of variables that have different values.
+
+This problem can be formulated as a QUBO problem by defining an objective function that counts the number of pairs of variables with different values and then minimizing the negative of this count. We can use a similar approach as in Problem 1 to solve this problem. Details of derivation are omitted here.
+
+\textbf{Problem 3:} Multi-variable Relationship Mapping. Objective of this problem is to manage four individuals (Xavier, Yolanda, Zeke and Wanda) with specific relationship constraints: 
+\begin{itemize}
+    \item \textbf{X and Y are friends:} They must have the same value;
+    \item \textbf{Y and Z are enemies:} They must have the different values;
+    \item \textbf{Z and W are friends:} They must have the same value.
+\end{itemize}
+
+\textbf{Approach}: The problem is broken down into three sub-problems, each corresponding to one of the relationship constraints. Each sub-problem is formulated as a QUBO problem, and the overall objective function is constructed by combining the individual objective functions from each sub-problem. The resulting QUBO matrix $Q$ can be constructed by summing the contributions from each sub-problem, ensuring that the relationships between the individuals are properly represented in the optimization process.
+
+To solve this problem, we can convert it to a graphical representation like
+Figure \ref{fig:qubo_graph_3}, where each individual is represented as a node, and the edges denote the relationships between them. The weights of the edges correspond to the coefficients in the QUBO matrix, reflecting the constraints imposed by the friendships and enmities among the individuals.
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \node[circle, draw] (X) at (0, 0) {X};
+        \node[circle, draw] (Y) at (2, 0) {Y};
+        \node[circle, draw] (Z) at (2, 1.5) {Z};
+        \node[circle, draw] (W) at (0, 1.5) {W};
+
+        \draw[thick] (X) -- (Y) node[midway, below] {F};
+        \draw[thick] (Y) -- (Z) node[midway, left] {E};
+        \draw[thick] (Z) -- (W) node[midway, above] {F};
+
+    \end{tikzpicture}
+    \caption{Graphical representation of the multi-variable relationship mapping problem}\label{fig:qubo_graph_3}
+\end{figure}
+The configuration of the Figure \ref{fig:qubo_graph_3} will give us the \textit{lowest energy state} of the system, which corresponds to the optimal assignment of values to the individuals that satisfies the relationship constraints. The optimization process will seek to minimize the overall objective function, leading to a solution that respects the friendships and enmities among Xavier, Yolanda, Zeke, and Wanda.
+
+Let us consider the relationship between X and Y, which are friends and must have the same value. We can define an objective function $f_{XY}(x, y) = ax+by+cxy+d$. Follow the example of Problem 1, we can set $a=1$, $b=1$, $c=-2$, and $d=0$ to achieve the desired optimization goal. Graphically, this can be represented as a QUBO graph in Figure \ref{fig:qubo_graph_4}, where the edge between X and Y has a weight of -2, indicating that they should have the same value. 
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \node[circle, draw] (X) at (0, 0) {X};
+        \node[circle, draw] (Y) at (2, 0) {Y};
+
+        \draw[thick] (X) -- (Y) node[midway, below] {-2};
+        \draw[thick] (X) -- ++(-0.5, 0) node[left] {+1};
+        \draw[thick] (Y) -- ++(0.5, 0) node[right] {+1};
+    \end{tikzpicture}
+    \caption{Graphical representation of the relationship between X and Y}\label{fig:qubo_graph_4}
+\end{figure}
+
+Then, for the relationship between Y and Z, which are enemies and must have different values, we can define an objective function $f(y,z) = ey+fz+gxy+h$. After some algebraic manipulation, we can set $e=1$, $f=1$, $g=2$, and $h=0$ to achieve the desired optimization goal. The corresponding graphical representation can be shown in Figure \ref{fig:qubo_graph_5}, where the edge between Y and Z has a weight of +2, indicating that they should have different values.
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \node[circle, draw] (Y) at (0, 0) {Y};
+        \node[circle, draw] (Z) at (0, 1.5) {Z};
+
+        \draw[thick] (Y) -- (Z) node[midway, right] {+2};
+        \draw[thick] (Y) -- ++(0, -0.5) node[below] {-1};
+        \draw[thick] (Z) -- ++(0, 0.5) node[above] {-1};
+    \end{tikzpicture}
+    \caption{Graphical representation of the relationship between Y and Z}\label{fig:qubo_graph_5}
+\end{figure}
+
+Finally, for the relationship between Z and W, which is similar to the relationship between X and Y, we can define an objective function $f_{ZW}(z, w) = cz+dw+ezw+f$. Following the same approach as before, we can set $c=1$, $d=1$, $e=-2$, and $f=0$ to achieve the desired optimization goal. The corresponding graphical representation can be shown in Figure \ref{fig:qubo_graph_6}, where the edge between Z and W has a weight of -2, indicating that they should have the same value.
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \node[circle, draw] (Z) at (2, 0) {Z};
+        \node[circle, draw] (W) at (0, 0) {W};
+
+        \draw[thick] (Z) -- (W) node[midway, below] {-2};
+        \draw[thick] (Z) -- ++(0.5, 0) node[right] {+1};
+        \draw[thick] (W) -- ++(-0.5, 0) node[left] {+1};
+    \end{tikzpicture}
+    \caption{Graphical representation of the relationship between Z and W}\label{fig:qubo_graph_6}
+\end{figure}
+
+If we combine the three sub-problems (sub-graphs), it will end up into the graph shown in Figure \ref{fig:qubo_graph_7}, 
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \node[circle, draw] (X) at (0, 0) {X};
+        \node[circle, draw] (Y) at (2, 0) {Y};
+        \node[circle, draw] (Z) at (2, 1.5) {Z};
+        \node[circle, draw] (W) at (0, 1.5) {W};
+
+        \draw[thick] (X) -- (Y) node[midway, below] {-2};
+        \draw[thick] (Y) -- (Z)
+        node[midway, right] {+2}
+        node[midway, right=1.2cm] {\small constant = -2};
+        \draw[thick] (Z) -- (W) node[midway, above] {-2};
+
+        \draw[thick] (X) -- ++(-0.5, 0) node[left] {+1};
+        \draw[thick] (W) -- ++(-0.5, 0) node[left] {+1};
+    \end{tikzpicture}
+    \caption{Graphical representation of the combined four-variable relationship mapping problem}\label{fig:qubo_graph_7}
+\end{figure}
+corresponding to the QOUBO objective function:
+\begin{equation}
+f(x, y, z, w) = -2 +x +  w - 2xy + 2yz - 2zw
+\end{equation}
+which gives rise to the truth table shown in Table \ref{tab:truth_table_2}. The optimal solution is $x=1$, $y=1$, $z=0$, and $w=0$, which satisfies the relationship constraints among the four individuals.
+\begin{table}[ht]
+\centering
+\caption{Truth Table for Problem 3}
+\label{tab:truth_table_2}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+$x$ & $y$ & $z$ & $w$ & $f(x, y, z, w)$ \\
+\hline
+0 & 0 & 0 & 0 & -2 \\
+0 & 0 & 0 & 1 & -1 \\
+0 & 0 & 1 & 0 & -2 \\
+0 & 0 & 1 & 1 & -3 \\
+0 & 1 & 0 & 0 & -1 \\
+0 & 1 & 0 & 1 & -2 \\
+0 & 1 & 1 & 0 & -2 \\
+0 & 1 & 1 & 1 & -1 \\
+1 & 0 & 0 & 0 & -1 \\
+1 & 0 & 0 & 1 & 0 \\
+1 & 0 & 1 & 0 & 0 \\
+1 & 0 & 1 & 1 & 1 \\
+1 & 1 & 0 & 0 & -3 \\
+1 & 1 & 0 & 1 & -2 \\
+1 & 1 & 1 & 0 & -1 \\
+1 & 1 & 1 & 1 & 0 \\
+\hline
+\end{tabular}
+\end{table}
+
+So, how to explain the results of the optimal solution displayed in Table \ref{tab:truth_table_2}? The optimal solution $x=1$, $y=1$, $z=0$, and $w=0$ indicates that Xavier and Yolanda are assigned the same value (1), satisfying their friendship constraint. Zeke and Wanda are also assigned the same value (0), satisfying their friendship constraint. Additionally, Yolanda and Zeke have different values (1 and 0, respectively), satisfying their enmity constraint. Also, the other optimal solution $x=0$, $y=0$, $z=1$, and $w=1$ indicates that Xavier and Yolanda are assigned different values (0 and 1, respectively), satisfying their enmity constraint. Zeke and Wanda are also assigned different values (1 and 0, respectively), satisfying their enmity constraint. And there in NO other optimal solutions, which makes sense in this context.
+Thus, the optimal solution respects all the relationship constraints among the four individuals, demonstrating the effectiveness of the QUBO formulation in solving this multi-variable relationship mapping problem.

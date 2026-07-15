@@ -47,10 +47,11 @@
 \contentsline {subsection}{\numberline {7.1}QUBO Formulation}{56}{subsection.7.1}%
 \contentsline {subsection}{\numberline {7.2}Ising Model}{57}{subsection.7.2}%
 \contentsline {subsection}{\numberline {7.3}Application of QUBO and Ising model}{58}{subsection.7.3}%
-\contentsline {section}{\numberline {A}Derivation of Formulae}{59}{appendix.A}%
-\contentsline {subsection}{\numberline {A.1}Laplacian of two electron system}{59}{subsection.A.1}%
-\contentsline {subsection}{\numberline {A.2}Exponentiate Matrix}{61}{subsection.A.2}%
-\contentsline {section}{\numberline {B}Special Functions}{63}{appendix.B}%
-\contentsline {subsection}{\numberline {B.1}Chebyshev Polynomials}{63}{subsection.B.1}%
-\contentsline {subsection}{\numberline {B.2}Error Function}{64}{subsection.B.2}%
-\contentsline {section}{\numberline {C}LaTeX 数学符号速查表}{66}{appendix.C}%
+\contentsline {subsection}{\numberline {7.4}Some simple problems sovled by QUBO}{58}{subsection.7.4}%
+\contentsline {section}{\numberline {A}Derivation of Formulae}{63}{appendix.A}%
+\contentsline {subsection}{\numberline {A.1}Laplacian of two electron system}{63}{subsection.A.1}%
+\contentsline {subsection}{\numberline {A.2}Exponentiate Matrix}{65}{subsection.A.2}%
+\contentsline {section}{\numberline {B}Special Functions}{67}{appendix.B}%
+\contentsline {subsection}{\numberline {B.1}Chebyshev Polynomials}{67}{subsection.B.1}%
+\contentsline {subsection}{\numberline {B.2}Error Function}{68}{subsection.B.2}%
+\contentsline {section}{\numberline {C}LaTeX 数学符号速查表}{70}{appendix.C}%
